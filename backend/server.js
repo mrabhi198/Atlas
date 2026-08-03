@@ -44,7 +44,7 @@ passport.deserializeUser((user, done) => {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID || 'mock_google_id',
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'mock_google_secret',
-    callbackURL: 'http://localhost:5001/api/auth/google/callback'
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:5001/api/auth/google/callback'
   },
   async (accessToken, refreshToken, profile, done) => {
     // Pass the profile along to the route handler
@@ -56,7 +56,7 @@ passport.use(new GoogleStrategy({
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID || 'mock_github_id',
     clientSecret: process.env.GITHUB_CLIENT_SECRET || 'mock_github_secret',
-    callbackURL: 'http://localhost:5001/api/auth/github/callback'
+    callbackURL: process.env.GITHUB_CALLBACK_URL || 'http://localhost:5001/api/auth/github/callback'
   },
   async (accessToken, refreshToken, profile, done) => {
     // Pass the profile along to the route handler
