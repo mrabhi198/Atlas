@@ -6,7 +6,7 @@
 
 **Learn. Build. Engineer. Get Hired.**
 
-<img src="./docs/assets/banner.png" alt="Atlas Banner" width="100%" />
+<img src="/frontend/public/banner.png" alt="Atlas Banner" width="100%" />
 
 ---
 

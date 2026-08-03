@@ -5,7 +5,8 @@ export default function Passport({ user, missionCompleted }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(`https://atlas.dev/passport/${user.callsign.toLowerCase()}`);
+    const username = user.username || user.callsign || 'architect';
+    navigator.clipboard.writeText(`https://atlas.dev/passport/${username.toLowerCase()}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -15,11 +16,11 @@ export default function Passport({ user, missionCompleted }) {
       <header className="passport-header glass-panel">
         <div className="profile-badge">
           <div className="passport-avatar font-mono">
-            {user.callsign[0]?.toUpperCase() || 'A'}
+            {(user.username || user.callsign || 'A')[0]?.toUpperCase() || 'A'}
           </div>
           <div className="profile-info">
-            <h1 className="passport-name">{user.callsign || 'Architect'}</h1>
-            <p className="passport-title font-mono">{user.path || 'Backend Architect'}</p>
+            <h1 className="passport-name">{user.full_name || user.username || user.callsign || 'Architect'}</h1>
+            <p className="passport-title font-mono">{user.track || user.path || 'Backend Architect'}</p>
             <p className="passport-id font-mono">ID: SECURE_NODE_0x78B9</p>
           </div>
         </div>

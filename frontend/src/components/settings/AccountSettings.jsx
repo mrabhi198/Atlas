@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, User, Lock, Server, Trash2, Cpu, Check } from 'lucide-react';
 
-const API_BASE = 'http://localhost:5001/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
 export default function AccountSettings({ user, profile, accessToken, onLogout, onUpdateProfile }) {
   const [activeTab, setActiveTab] = useState('profile'); // profile, security, sessions

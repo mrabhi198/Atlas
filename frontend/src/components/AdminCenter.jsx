@@ -368,10 +368,18 @@ export default function AdminCenter({
                 <span>STATUS</span>
               </div>
               
-              {usersList.map((usr) => (
+              {usersList
+                .filter(usr => {
+                  const role = (usr.role || '').toLowerCase();
+                  if (activeMenu === 'users-students') return role === 'student' || role === 'jr architect';
+                  if (activeMenu === 'users-mentors') return role === 'mentor' || role === 'guider';
+                  if (activeMenu === 'users-admins') return role === 'admin' || role === 'super admin';
+                  return true;
+                })
+                .map((usr) => (
                 <div key={usr.id} className="table-row align-center">
-                  <span className="font-mono font-bold text-glow-cyan">{usr.callsign}</span>
-                  <span>{usr.path}</span>
+                  <span className="font-mono font-bold text-glow-cyan">{usr.username}</span>
+                  <span>{usr.learning_track || 'Not Assigned'}</span>
                   <div>
                     {/* Super Admin can modify user tags */}
                     <select

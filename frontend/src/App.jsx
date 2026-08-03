@@ -12,6 +12,7 @@ import Register from './components/auth/Register';
 import VerifyEmail from './components/auth/VerifyEmail';
 import ForgotPassword from './components/auth/ForgotPassword';
 import ResetPassword from './components/auth/ResetPassword';
+import AuthSuccess from './components/auth/AuthSuccess';
 import OnboardingWizard from './components/auth/OnboardingWizard';
 import AccountSettings from './components/settings/AccountSettings';
 
@@ -21,12 +22,17 @@ import {
   Compass, 
   Award, 
   Briefcase, 
-  RefreshCw, 
+  RefreshCw,
   Settings,
-  ShieldAlert
+  ShieldAlert,
+  BookOpen,
+  ArrowLeft
 } from 'lucide-react';
 
-const API_BASE = 'http://localhost:5001/api';
+import LearnHub from './components/learn/LearnHub';
+import LessonViewer from './components/learn/LessonViewer';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -36,6 +42,7 @@ function App() {
   const [sessionId, setSessionId] = useState('');
 
   const [activeTab, setActiveTab] = useState('overview');
+  const [activeLessonId, setActiveLessonId] = useState(null);
   const [missionCompleted, setMissionCompleted] = useState(false);
   const [usersList, setUsersList] = useState([]);
   const [hashPath, setHashPath] = useState('');
@@ -82,7 +89,7 @@ function App() {
 
       if (!savedRefreshToken) {
         const currentHash = window.location.hash.split('?')[0];
-        if (!['#register', '#forgot-password', '#reset-password', '#verify-email', '#keypad'].includes(currentHash)) {
+        if (!['#register', '#forgot-password', '#reset-password', '#verify-email', '#keypad', '#auth-success'].includes(currentHash)) {
           window.location.hash = '#login';
         }
         return;
@@ -214,6 +221,11 @@ function App() {
     }
   };
 
+  const handleOnboardingWizardComplete = (updatedProfile) => {
+    setProfile(updatedProfile);
+    window.location.hash = ''; // Return to dashboard
+  };
+
   const handleUpdateUserRole = async (userId, newRole) => {
     try {
       const res = await fetch(`${API_BASE}/users/${userId}/role`, {
@@ -270,6 +282,7 @@ function App() {
     setSessionId('');
     setMissionCompleted(false);
     setActiveTab('overview');
+    setActiveLessonId(null);
     window.location.hash = '#login';
 
     localStorage.removeItem('atlas_refresh_token');
@@ -288,6 +301,16 @@ function App() {
           <div className="subtle-grid"></div>
           <Register onNavigateToLogin={() => window.location.hash = '#login'} />
         </div>
+      );
+    }
+    if (hashPath === '#auth-success') {
+      return (
+        <AuthSuccess 
+          onLoginSuccess={(data) => {
+            handleLoginSuccess(data);
+            window.location.hash = ''; // clear hash to force dashboard view
+          }} 
+        />
       );
     }
     if (hashPath === '#forgot-password') {
@@ -390,7 +413,7 @@ function App() {
         <nav className="nav-links">
           <button 
             className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
-            onClick={() => setActiveTab('overview')}
+            onClick={() => { setActiveTab('overview'); setActiveLessonId(null); }}
             style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
           >
             <Layout size={18} />
@@ -398,8 +421,17 @@ function App() {
           </button>
 
           <button 
+            className={`nav-item ${activeTab === 'learn' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('learn'); setActiveLessonId(null); }}
+            style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
+          >
+            <BookOpen size={18} />
+            <span>Learning Hub</span>
+          </button>
+
+          <button 
             className={`nav-item ${activeTab === 'ide' ? 'active' : ''}`}
-            onClick={() => setActiveTab('ide')}
+            onClick={() => { setActiveTab('ide'); setActiveLessonId(null); }}
             style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
           >
             <Terminal size={18} />
@@ -408,7 +440,7 @@ function App() {
 
           <button 
             className={`nav-item ${activeTab === 'practice' ? 'active' : ''}`}
-            onClick={() => setActiveTab('practice')}
+            onClick={() => { setActiveTab('practice'); setActiveLessonId(null); }}
             style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
           >
             <Compass size={18} />
@@ -417,7 +449,7 @@ function App() {
 
           <button 
             className={`nav-item ${activeTab === 'passport' ? 'active' : ''}`}
-            onClick={() => setActiveTab('passport')}
+            onClick={() => { setActiveTab('passport'); setActiveLessonId(null); }}
             style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
           >
             <Award size={18} />
@@ -426,7 +458,7 @@ function App() {
 
           <button 
             className={`nav-item ${activeTab === 'career' ? 'active' : ''}`}
-            onClick={() => setActiveTab('career')}
+            onClick={() => { setActiveTab('career'); setActiveLessonId(null); }}
             style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
           >
             <Briefcase size={18} />
@@ -435,7 +467,7 @@ function App() {
 
           <button 
             className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-            onClick={() => setActiveTab('settings')}
+            onClick={() => { setActiveTab('settings'); setActiveLessonId(null); }}
             style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
           >
             <Settings size={18} />
@@ -484,6 +516,22 @@ function App() {
             accessToken={accessToken}
             missionCompleted={missionCompleted} 
             onNavigateToIDE={() => setActiveTab('ide')} 
+          />
+        )}
+
+        {activeTab === 'learn' && !activeLessonId && (
+          <LearnHub 
+            user={user}
+            accessToken={accessToken}
+            onNavigateToLesson={(lessonId) => setActiveLessonId(lessonId)}
+          />
+        )}
+
+        {activeTab === 'learn' && activeLessonId && (
+          <LessonViewer 
+            lessonId={activeLessonId}
+            accessToken={accessToken}
+            onBack={() => setActiveLessonId(null)}
           />
         )}
 

@@ -30,7 +30,7 @@ export default function Login({
         onLoginSuccess(data);
       } else {
         if (data.requiresVerification) {
-          setErrorMsg(`Email not verified. Verification token: ${data.email}. Click verification link in terminal logs.`);
+          setErrorMsg(`Email not verified. Please check the backend terminal logs for your verification link, or check your database.`);
         } else {
           setErrorMsg(data.error || 'Authentication failed.');
         }
@@ -43,37 +43,10 @@ export default function Login({
     }
   };
 
-  const handleOAuthLogin = async (provider) => {
+  const handleOAuthLogin = (provider) => {
     setIsLoading(true);
-    setErrorMsg('');
-    const mockEmail = `${provider}_user${Math.floor(Math.random() * 1000)}@gmail.com`;
-    const mockName = `${provider.toUpperCase()} Developer`;
-    const mockId = `oauth_${Math.random().toString(36).substr(2, 9)}`;
-
-    try {
-      const res = await fetch('http://localhost:5001/api/auth/oauth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          provider,
-          email: mockEmail,
-          name: mockName,
-          providerUserId: mockId
-        })
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        onLoginSuccess(data);
-      } else {
-        setErrorMsg(data.error || 'OAuth verification failed.');
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMsg('Failed to establish federation.');
-    } finally {
-      setIsLoading(false);
-    }
+    const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+    window.location.href = `${backendUrl}/auth/${provider}`;
   };
 
   return (
@@ -172,15 +145,17 @@ export default function Login({
       <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px' }}>
         <button 
           onClick={onNavigateToRegister} 
-          className="font-mono text-glow-cyan"
-          style={{ background: 'none', border: 'none', fontSize: '11px', cursor: 'pointer', textAlign: 'center' }}
+          className="font-mono"
+          style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '11px', cursor: 'pointer', textAlign: 'center', textShadow: '0 0 10px rgba(0, 240, 255, 0.5)' }}
         >
           CREATE NEW ACCOUNT [SIGN UP]
         </button>
         <button 
           onClick={onNavigateToStudentKeypad} 
           className="font-mono"
-          style={{ background: 'none', border: 'none', color: 'var(--text-dim)', fontSize: '10px', cursor: 'pointer', textAlign: 'center' }}
+          style={{ background: 'none', border: 'none', color: '#a0a0b0', fontSize: '10px', cursor: 'pointer', textAlign: 'center', transition: 'color 0.2s' }}
+          onMouseEnter={(e) => e.target.style.color = '#ffffff'}
+          onMouseLeave={(e) => e.target.style.color = '#a0a0b0'}
         >
           BYPASS LOGIN WITH ACCESS KEYPAD
         </button>
