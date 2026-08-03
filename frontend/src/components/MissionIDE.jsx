@@ -159,7 +159,7 @@ class SearchBenchmarks {
     ]);
 
     try {
-      const res = await fetch('http://localhost:5001/api/missions/execute', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

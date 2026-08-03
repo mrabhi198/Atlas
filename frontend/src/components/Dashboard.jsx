@@ -24,7 +24,7 @@ import {
   Info
 } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
 
 export default function Dashboard({ user, accessToken, missionCompleted, onNavigateToIDE }) {
   const [loading, setLoading] = useState(true);

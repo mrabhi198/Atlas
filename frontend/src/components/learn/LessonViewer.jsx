@@ -14,7 +14,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/atom-one-dark.css';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
 
 export default function LessonViewer({ lessonId, accessToken, onBack }) {
   const [data, setData] = useState(null);

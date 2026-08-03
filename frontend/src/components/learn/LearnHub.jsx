@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import FlashCard from './FlashCard';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
 
 export default function LearnHub({ accessToken, onNavigateToLesson, onNavigateToBookmarks }) {
   const [loading, setLoading] = useState(true);

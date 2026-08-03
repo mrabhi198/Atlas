@@ -32,7 +32,7 @@ import {
 import LearnHub from './components/learn/LearnHub';
 import LessonViewer from './components/learn/LessonViewer';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
 
 function App() {
   const [user, setUser] = useState(null);
