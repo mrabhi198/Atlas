@@ -19,7 +19,7 @@ export default function Login({
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ loginId, password })
@@ -45,7 +45,7 @@ export default function Login({
 
   const handleOAuthLogin = (provider) => {
     setIsLoading(true);
-    const backendUrl = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
+    const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
     window.location.href = `${backendUrl}/auth/${provider}`;
   };
 
