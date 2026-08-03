@@ -138,7 +138,7 @@ function App() {
 
   // Sync users list if admin route loaded
   useEffect(() => {
-    if (hashPath === '#admin' && accessToken) {
+    if ((hashPath === '#admin' || window.location.pathname === '/admin') && accessToken) {
       fetchUsers();
     }
   }, [hashPath, accessToken]);
@@ -375,7 +375,7 @@ function App() {
     );
   }
 
-  if (hashPath === '#admin') {
+  if (hashPath === '#admin' || window.location.pathname === '/admin') {
     const isStaff = ['admin', 'super admin', 'mentor', 'guider'].includes(user.role?.toLowerCase());
     if (!isStaff) {
       return (
@@ -396,7 +396,13 @@ function App() {
         usersList={usersList} 
         onUpdateUserRole={handleUpdateUserRole}
         onResetSession={handleResetSession}
-        onBackToPortal={() => window.location.hash = ''}
+        onBackToPortal={() => {
+          if (window.location.pathname === '/admin') {
+            window.location.href = '/';
+          } else {
+            window.location.hash = '';
+          }
+        }}
       />
     );
   }
