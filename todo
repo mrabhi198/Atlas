@@ -1,0 +1,885 @@
+Atlas — Master Project TODO & Progress Tracker
+
+Purpose: Single source for tracking what is completed, what is in progress, and what remains for Atlas MVP.
+
+⸻
+
+0. Project Foundation
+
+Documentation
+
+* Create initial Atlas PRD
+* Convert PRD into clean PRD.md
+* Create Architecture.md
+* Create Design.md
+* Create Rules.md
+* Create Memory.md
+* Create README.md
+* Define documentation source-of-truth rules
+* Define MVP scope lock
+
+Current Documentation Structure
+
+docs/
+├── PRD.md
+├── Architecture.md
+├── Design.md
+├── Rules.md
+└── Memory.md
+
+⸻
+
+1. Product Definition
+
+Core Product
+
+* Define Atlas as an AI-powered software engineering learning ecosystem
+* Define engineering-first learning philosophy
+* Define learning-by-building approach
+* Define AI as mentor rather than answer generator
+* Define portfolio-driven learning
+* Define engineering missions
+
+Product Differentiators
+
+* Adaptive Learning Engine concept
+* Engineering Mission Engine
+* Guide Mode
+* Simplify Mode
+* Progressive Hint System
+* Secure Execution Platform
+* AI Mentor / Atlas Senior Engineer concept
+* Engineering Progression System
+* Engineering Passport
+* Engineering Talent Network concept
+* Engineering Story Universe concept
+* Engineering Thinking Canvas concept
+
+⸻
+
+2. MVP Scope
+
+MVP — IN SCOPE
+
+* Authentication
+* Dashboard
+* Learning Paths
+* Lessons
+* Mission Engine
+* Simplify Mode
+* Guide Mode
+* Hint System
+* Code Editor
+* Compiler / Execution
+* Hidden Tests
+* XP / Progression
+* Portfolio
+* AI Review
+* Admin Panel
+
+These are explicitly identified as MVP scope in the PRD.
+
+MVP — OUT OF SCOPE
+
+* Team Collaboration
+* Hiring Platform
+* Live Competitions
+* Marketplace
+* Voice Mentor
+* Mobile Applications
+
+These remain future phases unless the MVP scope is intentionally changed.
+
+⸻
+
+3. Repository & Development Setup
+
+Repository
+
+* Create/confirm Git repository
+* Push frontend
+* Push backend
+* Verify repository structure
+* Add .gitignore
+* Ignore frontend/.env
+* Ignore backend/.env
+* Verify no secrets are committed
+* Create development branch
+* Define Git workflow
+
+Environment Variables
+
+* Create frontend/.env
+* Create backend/.env
+* Document required environment variables
+* Add .env.example
+* Verify secrets are not committed
+* Document local development setup
+
+⸻
+
+4. Authentication
+
+Authentication Methods
+
+Email / Password
+
+* Registration
+* Login
+* Logout
+* Forgot password
+* Reset password
+* Email verification
+* Password validation
+* Session handling
+
+Google OAuth
+
+* Google Cloud project/credentials page configured
+* OAuth Client ID exists
+* Existing OAuth application: Atlas Web
+* Verify Client ID is used by backend
+* Add Google Client ID to backend/.env
+* Add Google Client Secret to backend/.env
+* Configure authorized redirect URI
+* Test Google login end-to-end
+* Verify user record is created
+* Verify session is created
+* Verify logout
+* Verify existing-account linking behavior
+
+GitHub OAuth
+
+* GitHub OAuth application created
+* Application name: Atlas
+* Homepage URL configured for local frontend
+* Callback URL configured
+* Verify callback URL exactly matches backend callback
+* Get GitHub Client ID
+* Get GitHub Client Secret
+* Add credentials to backend/.env
+* Test GitHub login
+* Test callback
+* Test user creation
+* Test existing-account linking
+* Test logout/session
+
+Current GitHub Issue
+
+Current browser error:
+
+The redirect_uri is not associated with this application.
+
+Therefore:
+
+* Fix GitHub OAuth callback mismatch
+* Ensure frontend/backend URLs match actual running environment
+* Re-test GitHub login
+
+⸻
+
+5. User Onboarding
+
+According to the PRD, authentication should transition into personalization rather than directly dumping a new user onto the dashboard.
+
+* Welcome screen
+* Choose career goal
+* Choose skill level
+* Choose daily learning time
+* Choose target
+* Choose learning track
+* Generate personalized roadmap
+* Save learning profile
+* Redirect to dashboard
+
+User Profile
+
+* Name
+* Username
+* Country
+* Timezone
+* Preferred language
+* Programming experience
+* Career goal
+* Learning path
+* GitHub username
+* LinkedIn
+* Portfolio
+* Avatar
+
+⸻
+
+6. Dashboard
+
+* Dashboard UI
+* User greeting
+* Current learning path
+* Today’s focus
+* Recommended lesson
+* Recommended mission
+* Revision task
+* XP
+* Level
+* Streak
+* Progress
+* Engineering readiness
+* Interview readiness
+* Recent activity
+
+⸻
+
+7. Learning System
+
+Learning Paths
+
+* Learning path listing
+* Track selection
+* Module listing
+* Topic listing
+* Progress tracking
+* Prerequisite handling
+* Locked/unlocked content
+
+Phase 1 Tracks
+
+* Programming Fundamentals
+* Java
+* Kotlin
+* Android
+* Jetpack Compose
+* Git
+* Databases
+* SQL
+* REST APIs
+
+These are the Phase 1 learning tracks defined in the PRD.
+
+⸻
+
+8. Lessons
+
+* Lesson UI
+* Lesson content structure
+* Markdown support
+* Code blocks
+* Examples
+* Learning objectives
+* Lesson completion
+* Lesson progress
+* Lesson analytics
+
+⸻
+
+9. Engineering Mission Engine
+
+Core Atlas feature
+
+* Mission listing
+* Mission details
+* Mission story/context
+* Requirements
+* Learning objectives
+* Prerequisites
+* Constraints
+* Deliverables
+* Success criteria
+* Mission stages
+* Mission submission
+* Mission attempts
+* Mission review
+* Mission reflection
+* XP reward
+* Portfolio artifact
+
+Mission Types
+
+* Logic Mission
+* Feature Mission
+* Bug Hunt Mission
+* Refactoring Mission
+* Performance Mission
+* Security Mission
+* Architecture Mission
+* Testing Mission
+* System Design Mission
+* DevOps Mission
+* Interview Mission
+
+The PRD defines the Mission Engine as the core of Atlas and includes these mission concepts.
+
+⸻
+
+10. Engineering Thinking Canvas
+
+Before coding:
+
+* Understand problem
+* Identify inputs/outputs
+* Identify constraints
+* Identify edge cases
+* Select data structures
+* Select architecture
+* Write pseudocode
+* Break into subtasks
+* Estimate complexity
+* Unlock code editor
+
+⸻
+
+11. Guide Mode
+
+* Guide session
+* Requirement clarification
+* Problem understanding
+* Engineering questions
+* Architecture guidance
+* Planning guidance
+* Partial guidance
+* Partial code
+* Complete solution restriction
+* Guidance history
+* Guidance analytics
+
+⸻
+
+12. Simplify Mode
+
+* Start Simplify Mode
+* Generate stages
+* Show current stage
+* Complete stage
+* Unlock next stage
+* Exit Simplify Mode
+* Dynamic sub-stage generation
+* Recovery mode
+
+⸻
+
+13. Hint System
+
+Six levels:
+
+* Level 1 — Requirement clarification
+* Level 2 — Concept explanation
+* Level 3 — Approach suggestion
+* Level 4 — Pseudocode
+* Level 5 — Partial implementation
+* Level 6 — Complete solution
+
+Also:
+
+* Hint usage tracking
+* XP modifier
+* Mission score modifier
+* Portfolio eligibility rules
+
+⸻
+
+14. Code Editor
+
+* Browser code editor
+* Syntax highlighting
+* File management
+* Multiple files
+* Save code
+* Restore code
+* Run
+* Submit
+* Compilation status
+* Test results
+* Error display
+* Mobile/responsive behavior
+
+⸻
+
+15. Secure Execution Platform
+
+* Submission service
+* Execution queue
+* Sandbox scheduler
+* Isolated execution
+* Compiler
+* Test runner
+* Hidden tests
+* Performance analysis
+* Memory measurement
+* Timeout protection
+* Resource limits
+* Sandbox cleanup
+* Execution logs
+* Security monitoring
+
+Phase 1 Languages
+
+* Java
+* Kotlin
+* Python
+* JavaScript
+* TypeScript
+* C++
+* Go
+* Kotlin Android components
+* Limited Swift
+
+These are the Phase 1 execution targets specified in the PRD.
+
+⸻
+
+16. AI System
+
+Gemini / AI Provider
+
+* Create Gemini API key
+* Add key to backend/.env
+* Never expose key to frontend
+* Create AI service
+* Test Gemini API
+* Add model configuration
+* Add error handling
+* Add rate limiting
+* Add usage tracking
+
+AI Review
+
+* Code review
+* Architecture review
+* Performance review
+* Security review
+* Testing review
+* Maintainability review
+* Engineering suggestions
+* AI review history
+
+⸻
+
+17. Adaptive Learning Engine
+
+* Learning profile
+* Knowledge graph
+* Concept mastery
+* Mastery percentage
+* Confidence score
+* Practice count
+* Revision count
+* Weak concepts
+* Strong concepts
+* Learning velocity
+* Personalized roadmap
+* Recommended lessons
+* Recommended missions
+* Revision queue
+* Daily plan
+* Weekly goals
+* Adaptive difficulty
+
+The PRD defines ALE as the intelligence layer connecting lessons, missions, AI mentoring, progress and recommendations.
+
+⸻
+
+18. Progression System
+
+* Engineering XP
+* Engineering levels
+* Engineering ranks
+* Career journey
+* Badges
+* Streaks
+* Daily missions
+* Weekly challenges
+* Engineering reputation
+* Coins
+* Leaderboards
+* Engineering journal
+* Milestones
+
+Important:
+
+XP ≠ Mastery ≠ Engineering Experience
+
+These should remain separate systems as defined in the PRD.
+
+⸻
+
+19. Portfolio / Engineering Passport
+
+* Private engineering profile
+* Public engineering profile
+* Projects
+* Skills
+* Mission history
+* Engineering timeline
+* Engineering experience
+* Achievements
+* Certificates
+* GitHub integration
+* Resume generation
+* Portfolio artifacts
+* Public profile URL
+* Recruiter view
+
+⸻
+
+20. Admin Panel / Control Center
+
+* Admin authentication
+* RBAC
+* Admin dashboard
+* User management
+* Mission management
+* Lesson management
+* Curriculum management
+* Mission Builder
+* AI configuration
+* Analytics
+* Moderation
+* Company management
+* Feature flags
+* Compiler management
+* Infrastructure monitoring
+* Notifications
+* Audit logs
+
+⸻
+
+21. Database
+
+* Finalize database choice
+* Design schema
+* Users
+* Profiles
+* Roles
+* Permissions
+* OAuth accounts
+* Sessions
+* Learning profiles
+* Knowledge graph
+* Missions
+* Mission attempts
+* Submissions
+* Execution results
+* AI sessions
+* Progress
+* Portfolio
+* Admin
+* Audit logs
+* Migrations
+* Seed data
+
+⸻
+
+22. API Layer
+
+* Authentication APIs
+* User APIs
+* Learning APIs
+* Mission APIs
+* Submission APIs
+* AI APIs
+* Progress APIs
+* Portfolio APIs
+* Admin APIs
+* Error handling
+* API validation
+* Authentication middleware
+* Authorization middleware
+* API documentation
+
+⸻
+
+23. Security
+
+* Password hashing
+* JWT/session security
+* Refresh tokens
+* CSRF protection
+* XSS protection
+* SQL injection protection
+* Rate limiting
+* Brute-force protection
+* OAuth security
+* Secret management
+* Audit logs
+* Secure code execution
+* Input validation
+
+⸻
+
+24. Frontend UI/UX
+
+* Design system
+* Typography
+* Colors
+* Spacing
+* Buttons
+* Forms
+* Cards
+* Modals
+* Navigation
+* Responsive design
+* Loading states
+* Empty states
+* Error states
+* Success states
+* Accessibility
+* Dark/light theme if required
+
+⸻
+
+25. Testing
+
+Frontend
+
+* Component tests
+* Form validation tests
+* Authentication flow tests
+* Responsive testing
+
+Backend
+
+* Unit tests
+* API tests
+* Authentication tests
+* Authorization tests
+* OAuth tests
+* Database tests
+
+Platform
+
+* Mission execution tests
+* Hidden test validation
+* Sandbox security tests
+* AI response tests
+* Performance tests
+
+End-to-End
+
+* Register
+* Login
+* OAuth
+* Onboarding
+* Learning
+* Mission
+* Code execution
+* AI review
+* Progress
+* Portfolio
+
+⸻
+
+26. Deployment
+
+Frontend
+
+* Vercel deployment created
+* Frontend has Vercel URL
+* Connect custom domain
+* Configure production environment variables
+* Production build test
+* Production authentication test
+
+Backend
+
+* Select hosting
+* Deploy backend
+* Configure production .env
+* Configure database
+* Configure CORS
+* Configure HTTPS
+* Configure production OAuth callback URLs
+* Configure monitoring
+
+⸻
+
+27. Domain
+
+Current exploration:
+
+* atlascodespace.com checked
+* atlascodepsace.com checked
+* atlasdevhub.com checked and shown as available
+* Final domain selected
+* Domain purchased
+* DNS configured
+* Vercel connected
+* SSL verified
+* Backend production URL configured
+
+Current Candidate
+
+atlasdevhub.com
+
+Status:
+
+Candidate — not confirmed purchased
+
+⸻
+
+28. Production OAuth
+
+After deployment:
+
+* Google production redirect URI
+* GitHub production callback URL
+* Update Google OAuth settings
+* Update GitHub OAuth settings
+* Update frontend environment
+* Update backend environment
+* Test Google production login
+* Test GitHub production login
+
+⸻
+
+29. Analytics & Monitoring
+
+* User registration tracking
+* Login tracking
+* Mission tracking
+* Lesson completion
+* Hint usage
+* Guide usage
+* AI usage
+* Compiler usage
+* Error tracking
+* API latency
+* Infrastructure monitoring
+* Crash/error monitoring
+* Business metrics
+
+⸻
+
+30. MVP Final QA
+
+Before calling Atlas MVP complete:
+
+* User can register
+* User can login
+* Google login works
+* GitHub login works
+* User onboarding works
+* Personalized dashboard works
+* Learning path works
+* Lessons work
+* Missions work
+* Guide Mode works
+* Simplify Mode works
+* Hints work
+* Code editor works
+* Code execution works
+* Hidden tests work
+* AI review works
+* XP works
+* Progress works
+* Portfolio works
+* Admin panel works
+* Security checks pass
+* Production deployment works
+* Custom domain works
+* No secrets exposed
+* Critical bugs fixed
+
+⸻
+
+31. CURRENT PRIORITY ORDER
+
+🔴 P0 — Do First
+
+* Clean PRD.md
+* Create Architecture.md
+* Create Design.md
+* Create Rules.md
+* Create Memory.md
+* Finalize repository structure
+* Configure .gitignore
+* Configure environment variables
+* Finish Google OAuth
+* Fix GitHub OAuth callback
+* Complete authentication
+* Complete onboarding
+* Complete database foundation
+* Complete backend foundation
+
+🟠 P1 — Core Product
+
+* Dashboard
+* Learning Paths
+* Lessons
+* Mission Engine
+* Code Editor
+* Execution Platform
+* Guide Mode
+* Simplify Mode
+* Hint System
+* AI Review
+
+🟡 P2 — Progress & Portfolio
+
+* XP
+* Levels
+* Streaks
+* Badges
+* Progress
+* Portfolio
+* Engineering Passport
+
+🟢 P3 — Platform
+
+* Admin Panel
+* Analytics
+* Monitoring
+* Production deployment
+* Custom domain
+* Production security
+* Final QA
+
+⸻
+
+32. FUTURE — DO NOT BUILD DURING MVP
+
+Keep these in backlog:
+
+* Team Collaboration
+* Hiring Platform
+* Live Competitions
+* Marketplace
+* Voice Mentor
+* Mobile Apps
+* Enterprise SSO
+* University ecosystem
+* Talent Network
+* Plugin ecosystem
+* Platform SDK
+* Voice mentoring
+* Whiteboard collaboration
+* Pair programming
+* GPU execution
+* Full iOS execution
+* Advanced enterprise features
+
+⸻
+
+33. STATUS LEGEND
+
+[x] Completed
+[ ] Not completed
+[~] In progress
+[!] Blocked
+
+Current Known Status
+
+Documentation        → Foundation exists, cleanup required
+Google OAuth         → Credential exists, integration verification required
+GitHub OAuth         → App exists, callback issue needs fixing
+Frontend Deployment  → Vercel exists
+Domain               → Candidate identified, purchase/configuration pending
+Gemini               → Integration/key setup pending confirmation
+Git                  → Repository workflow needs finalization
+MVP Development      → Core implementation still needs to be completed
+Production           → Not ready yet
+
+⸻
+
+34. Golden Rule
+
+Do not start a new major feature until the current P0/P1 feature is completed and checked off here.
+
+This document should be updated whenever a meaningful Atlas development task is completed.

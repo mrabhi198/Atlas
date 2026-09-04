@@ -707,6 +707,52 @@ app.put('/api/auth/change-password', authenticateToken, async (req, res) => {
   }
 });
 
+// 19. Get Security Tags
+app.get('/api/tags', authenticateToken, authorizeRoles('admin', 'super admin', 'mentor'), async (req, res) => {
+  try {
+    const tags = await db.all('SELECT * FROM security_tags ORDER BY created_at ASC');
+    res.json(tags);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve security tags.' });
+  }
+});
+
+// 20. Add Security Tag (Super Admin / Admin only)
+app.post('/api/tags', authenticateToken, authorizeRoles('admin', 'super admin'), async (req, res) => {
+  const { name } = req.body;
+  if (!name || name.trim().length === 0) return res.status(400).json({ error: 'Tag name required' });
+  
+  try {
+    const id = 'tag_' + Date.now() + Math.random().toString(36).substr(2, 9);
+    await db.run('INSERT INTO security_tags (id, name, created_at) VALUES (?, ?, ?)', [
+      id, name.trim(), new Date().toISOString()
+    ]);
+    const tag = await db.get('SELECT * FROM security_tags WHERE id = ?', [id]);
+    await writeAuditLog(req.user.id, `CREATED_TAG_${name.toUpperCase()}`, req);
+    res.json(tag);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create tag. It might already exist.' });
+  }
+});
+
+// 21. Delete Security Tag (Super Admin / Admin only)
+app.delete('/api/tags/:name', authenticateToken, authorizeRoles('admin', 'super admin'), async (req, res) => {
+  const { name } = req.params;
+  const criticalTags = ['admin', 'super admin']; // Prevent lockout
+  
+  if (criticalTags.includes(name.toLowerCase())) {
+    return res.status(403).json({ error: 'Cannot delete critical system tags.' });
+  }
+
+  try {
+    await db.run('DELETE FROM security_tags WHERE LOWER(name) = LOWER(?)', [name]);
+    await writeAuditLog(req.user.id, `DELETED_TAG_${name.toUpperCase()}`, req);
+    res.json({ message: 'Tag deleted successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete tag.' });
+  }
+});
+
 // 14. Get active sessions
 app.get('/api/auth/sessions', authenticateToken, async (req, res) => {
   try {

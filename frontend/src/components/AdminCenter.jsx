@@ -39,6 +39,76 @@ export default function AdminCenter({
     aiMentorSpeech: false
   });
   const [adminNotification, setAdminNotification] = useState('');
+  
+  // Security Tags state
+  const [securityTags, setSecurityTags] = useState([]);
+  const [newTagName, setNewTagName] = useState('');
+
+  useEffect(() => {
+    fetchTags();
+  }, []);
+
+  const fetchTags = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/tags`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setSecurityTags(await res.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleAddTag = async () => {
+    if (!newTagName.trim()) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/tags`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: newTagName.trim() })
+      });
+      if (res.ok) {
+        setNewTagName('');
+        fetchTags();
+        setAdminNotification('Tag created successfully.');
+        setTimeout(() => setAdminNotification(''), 4000);
+      } else {
+        setAdminNotification('ERROR: Failed to create tag.');
+        setTimeout(() => setAdminNotification(''), 4000);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDeleteTag = async (tagName) => {
+    if (!window.confirm(`Are you sure you want to delete the tag "${tagName}"?`)) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/tags/${encodeURIComponent(tagName)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchTags();
+        setAdminNotification('Tag deleted successfully.');
+        setTimeout(() => setAdminNotification(''), 4000);
+      } else {
+        const data = await res.json();
+        setAdminNotification(`ERROR: ${data.error || 'Failed to delete tag.'}`);
+        setTimeout(() => setAdminNotification(''), 4000);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   // Sidebar menus tree
   const menuConfig = [
@@ -58,7 +128,8 @@ export default function AdminCenter({
         { id: 'users-mentors', label: 'Mentors' },
         { id: 'users-companies', label: 'Companies' },
         { id: 'users-universities', label: 'Universities' },
-        { id: 'users-admins', label: 'Admins' }
+        { id: 'users-admins', label: 'Admins' },
+        { id: 'users-roles', label: 'Security Tags' }
       ]
     },
     {
@@ -348,7 +419,7 @@ export default function AdminCenter({
         )}
 
         {/* Users Section (Students, Mentors, Admins Table) */}
-        {activeMenu.startsWith('users-') && (
+        {activeMenu.startsWith('users-') && activeMenu !== 'users-roles' && (
           <div className="admin-panel-container fade-in">
             <h2>User Nodes Directory ({activeMenu.replace('users-', '').toUpperCase()})</h2>
             <p>Manage Callsign details, assigned roadmaps, and security tags.</p>
@@ -388,16 +459,77 @@ export default function AdminCenter({
                       className="tech-select font-mono text-xs"
                       style={{ padding: '6px 12px', width: '150px' }}
                     >
-                      <option value="jr architect">jr architect</option>
-                      <option value="admin">admin</option>
-                      <option value="super admin">super admin</option>
-                      <option value="mentor">mentor</option>
-                      <option value="guider">guider</option>
+                      {securityTags.length > 0 ? securityTags.map(tag => (
+                        <option key={tag.id} value={tag.name.toLowerCase()}>{tag.name.toLowerCase()}</option>
+                      )) : (
+                        <>
+                          <option value="jr architect">jr architect</option>
+                          <option value="admin">admin</option>
+                          <option value="super admin">super admin</option>
+                          <option value="mentor">mentor</option>
+                          <option value="guider">guider</option>
+                        </>
+                      )}
                     </select>
                   </div>
                   <span className="status-pill online font-mono">{usr.status}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Security Tags Management Panel */}
+        {activeMenu === 'users-roles' && (
+          <div className="admin-panel-container fade-in">
+            <h2>Security Tags Management</h2>
+            <p>Create and manage dynamic access roles and visual tags for users.</p>
+            
+            {!isSuperAdmin && (
+              <div className="admin-alert error font-mono" style={{ marginBottom: '20px' }}>
+                🛡 ADMIN PRIVILEGES REQUIRED: Some tags are locked from deletion to prevent systemic lockout.
+              </div>
+            )}
+
+            <div className="admin-grid-2">
+              <div className="glass-panel">
+                <h3>Add New Tag</h3>
+                <p style={{ margin: '10px 0 20px' }}>This tag will immediately be available to assign to users.</p>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <input 
+                    type="text" 
+                    value={newTagName} 
+                    onChange={e => setNewTagName(e.target.value)} 
+                    placeholder="e.g. Moderator" 
+                    className="tech-input font-mono"
+                    style={{ flex: 1 }}
+                  />
+                  <button onClick={handleAddTag} className="neon-btn font-mono text-xs">CREATE TAG</button>
+                </div>
+              </div>
+
+              <div className="glass-panel">
+                <h3>Active Tags Registry</h3>
+                <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {securityTags.map(tag => (
+                    <div key={tag.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px 15px', borderRadius: '4px' }}>
+                      <span className="font-mono text-glow-cyan">{tag.name.toLowerCase()}</span>
+                      {['admin', 'super admin'].includes(tag.name.toLowerCase()) ? (
+                        <span className="font-mono text-xs" style={{ color: '#888' }}>SYSTEM LOCKED</span>
+                      ) : (
+                        <button 
+                          onClick={() => handleDeleteTag(tag.name)}
+                          className="neon-btn secondary font-mono text-xs"
+                          style={{ padding: '4px 8px', color: '#ff4444', borderColor: '#ff4444' }}
+                        >
+                          DELETE
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  {securityTags.length === 0 && <span className="font-mono" style={{ color: '#888' }}>No tags found in registry.</span>}
+                </div>
+              </div>
             </div>
           </div>
         )}

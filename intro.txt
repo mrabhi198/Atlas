@@ -1,0 +1,1418 @@
+ATLAS — PROJECT INTRODUCTION & MASTER CONTEXT
+
+Document: intro.txt Purpose: Give a new developer, contributor, project
+manager, designer, or AI coding agent enough context to understand Atlas
+before modifying the project.
+
+IMPORTANT DOCUMENT STATUS
+
+This file is a project-context document. It explains the product,
+vision, terminology, architecture direction, current implementation, and
+known state.
+
+Source-of-truth hierarchy: 1. PRD.md / approved PRDs = product
+requirements and scope 2. Architecture.md = technical architecture and
+implementation decisions 3. Design.md = visual/UX system 4. Rules.md =
+engineering/product rules and constraints 5. Memory.md = persistent
+project decisions/context 6. intro.txt = onboarding/context summary; it
+should be updated when major project facts change
+
+Do not silently change product requirements because an implementation is
+easier. If implementation conflicts with an approved PRD, identify the
+conflict first.
+
+=============================================================================== 1.
+WHAT IS ATLAS?
+===============================================================================
+
+Atlas is an AI-powered software engineering learning ecosystem designed
+to help learners become professional software engineers through guided
+practice, real-world software engineering missions, AI mentorship, and
+production-inspired development workflows.
+
+Atlas is NOT intended to be only: - A LeetCode clone - A HackerRank
+clone - A video-course platform - A generic coding playground - A normal
+portfolio builder - An AI chatbot that gives code answers
+
+Atlas focuses on engineering thinking rather than only algorithmic
+problem solving.
+
+The central idea is:
+
+LEARN -> THINK -> PLAN -> BUILD -> DEBUG -> TEST -> OPTIMIZE -> REFLECT
+-> PROVE -> GROW
+
+Atlas teaches learners how software engineering work actually happens.
+
+Instead of presenting hundreds of disconnected questions, Atlas should
+progressively expose learners to realistic engineering situations: -
+Understand a requirement - Identify constraints - Break a problem into
+tasks - Select data structures and architecture - Implement the
+feature - Compile and test - Debug failures - Analyze performance -
+Improve code quality - Receive guided feedback - Reflect on decisions -
+Preserve evidence of the work in the learner’s engineering profile
+
+The product philosophy is: “Learn Like an Engineer. Build Like an
+Engineer. Get Hired Like an Engineer.”
+
+===============================================================================
+2. WHY ATLAS EXISTS
+===============================================================================
+
+Traditional programming education often creates fragmented learning.
+
+A beginner may learn: - Java syntax from one source - Kotlin from
+another - DSA from LeetCode - Android from YouTube - Git from
+documentation - Projects from tutorials - Interview questions from
+another platform
+
+The learner may know individual concepts but still struggle to: -
+Understand requirements - Build a complete feature - Debug a real
+codebase - Make engineering trade-offs - Structure software - Test
+properly - Optimize performance - Explain technical decisions - Build
+credible evidence of engineering ability
+
+Atlas is designed to connect those pieces.
+
+Atlas learning should progress from: 1. Fundamentals 2. Logic building
+3. Programming concepts 4. DSA/application of logic 5. Framework
+concepts 6. Real-world engineering missions 7. Debugging and
+optimization 8. Architecture and testing 9. Portfolio evidence 10.
+Career readiness
+
+===============================================================================
+3. CORE PRODUCT PRINCIPLES
+===============================================================================
+
+Every feature should support one or more of these principles:
+
+1.  Learn by Building
+2.  Engineering First
+3.  Think Before Code
+4.  Guide Instead of Solving
+5.  AI as Mentor
+6.  Practical over Theoretical
+7.  Portfolio Driven
+8.  Industry Ready
+
+A feature should not exist simply because a competitor has it.
+
+Atlas should use gamification to improve engineering ability, not merely
+to increase screen time.
+
+Atlas should encourage productive struggle.
+
+The system should help a learner become better at thinking, not merely
+better at copying solutions.
+
+===============================================================================
+4. TARGET USERS
+===============================================================================
+
+PRIMARY USER — STUDENT / LEARNER
+
+The student uses Atlas to: - Learn concepts - Build logic - Follow a
+personalized roadmap - Complete engineering missions - Practice coding -
+Debug - Use Guide Mode - Use Simplify Mode - Receive hints - Run code -
+Receive AI feedback - Track mastery - Earn progression rewards - Build
+an Engineering Passport - Prepare for internships/jobs
+
+OTHER ROLES
+
+Mentor: - Reviews learner work - Provides feedback - Creates/maintains
+educational content - Supports learners
+
+Company: - Future role - Publishes assessments - Reviews engineering
+evidence - Recruits talent
+
+Administrator: - Manages users - Manages missions and lessons - Manages
+AI configuration - Manages analytics - Moderates the platform - Manages
+system settings
+
+Future roles include: - College - Recruiter - Content Creator -
+Organization - Enterprise Admin - AI Moderator
+
+===============================================================================
+5. THE ATLAS LEARNER JOURNEY
+===============================================================================
+
+A canonical learner journey is:
+
+REGISTER | v SELECT GOAL | v CHOOSE LEARNING PATH | v COMPLETE LESSONS |
+v BUILD LOGIC | v SOLVE ENGINEERING MISSIONS | v DEBUG APPLICATIONS | v
+OPTIMIZE SYSTEMS | v RECEIVE GUIDED / AI FEEDBACK | v REFLECT | v BUILD
+ENGINEERING EVIDENCE | v ENGINEERING PASSPORT | v CERTIFICATION /
+READINESS | v INTERVIEW / CAREER | v EMPLOYMENT
+
+IMPORTANT: The user should not be dumped into a generic dashboard
+immediately after registration. First-time onboarding should collect
+enough information to start personalization.
+
+===============================================================================
+6. PERSONALIZED ONBOARDING
+===============================================================================
+
+The intended onboarding flow is:
+
+Landing Page -> Sign Up / Login -> Welcome -> Career Goal -> Current
+Skill Level -> Daily Learning Time -> Career Target -> Learning Track ->
+Personalized Roadmap -> Dashboard
+
+Career goals can include: - Android Developer - iOS Developer - Frontend
+Developer - Backend Developer - Full Stack Developer - AI/ML -
+Cybersecurity - Other future tracks
+
+Skill levels: - Complete Beginner - Beginner - Intermediate - Advanced
+
+Daily learning time can include: - 15 minutes - 30 minutes - 1 hour - 2
+hours - 4 hours
+
+Targets can include: - Internship - Job - Career Switch - College -
+Placement
+
+===============================================================================
+7. THE CORE DIFFERENTIATOR — ENGINEERING MISSIONS
+===============================================================================
+
+The Engineering Mission Engine (EME) is the heart of Atlas.
+
+Every learning activity should eventually become an engineering
+experience rather than an isolated question.
+
+Mission philosophy: Every mission should answer: 1. Why does this
+problem exist? 2. Where would it happen in a real product? 3. Which
+engineering concepts are being practiced? 4. How will solving it improve
+the learner?
+
+If a mission cannot answer those questions, it should be reconsidered.
+
+MISSION LIFECYCLE
+
+Discover Mission -> Understand Context -> Read Story -> Analyze
+Requirements -> Plan Solution -> Code -> Compile -> Run Tests -> AI
+Review -> Reflection -> Portfolio Update -> XP / Mastery Update
+
+MISSION HIERARCHY
+
+Career Path -> Track -> Module -> Topic -> Chapter -> Mission -> Stage
+-> Task
+
+EXAMPLE
+
+Android -> Jetpack Compose -> State Management -> remember() -> Mission
+-> Stage 1 -> Stage 2 -> Stage 3
+
+===============================================================================
+8. TYPES OF ENGINEERING MISSIONS
+===============================================================================
+
+Logic Mission
+
+Build computational thinking.
+
+Example: “Sort Instagram followers efficiently.”
+
+Feature Mission
+
+Implement a real product feature.
+
+Example: “Build a notification preference system.”
+
+Bug Hunt Mission
+
+Receive broken code and debug it.
+
+Refactoring Mission
+
+Improve code quality without changing behavior.
+
+Performance Mission
+
+Reduce CPU, memory, latency, or other resource costs.
+
+Security Mission
+
+Identify and fix vulnerabilities.
+
+Architecture Mission
+
+Improve structure and technical boundaries.
+
+Testing Mission
+
+Write unit, UI, integration, or other tests.
+
+System Design Mission
+
+Design a scalable system.
+
+DevOps Mission
+
+Deploy or operate software.
+
+Accessibility Mission
+
+Improve accessibility of software.
+
+Interview Mission
+
+Simulate company-style technical assessment.
+
+Team Mission
+
+Future collaboration-based engineering work.
+
+===============================================================================
+9. LOGIC BUILDING
+===============================================================================
+
+Atlas should deliberately build logic before expecting advanced
+competitive programming performance.
+
+Example progression:
+
+BASIC LOGIC - Variables - Conditions - Loops - Functions - Collections
+
+THEN APPLIED LOGIC - Filtering - Searching - Sorting - Validation -
+State transitions - Event handling
+
+THEN ENGINEERING LOGIC - Data modeling - API logic - Caching -
+Indexing - Pub/Sub - Authentication - Pagination - Error handling -
+Performance optimization
+
+The learner should encounter problems that feel like software features.
+
+Example: Instead of only asking: “Sort an array.”
+
+Atlas may ask: “An Instagram-like application has 50,000 followers.
+Implement a follower discovery/search mechanism and compare a linear
+scan with an indexed approach.”
+
+This connects DSA to engineering.
+
+===============================================================================
+10. GUIDE MODE
+===============================================================================
+
+Guide Mode exists to provide structured guidance without immediately
+giving the answer.
+
+The mentor should ask questions such as: - What have you tried? - What
+do you think the requirement means? - What data do you have? - What
+output is expected? - What edge cases exist? - What approach are you
+considering? - What would happen if the input became 10x larger?
+
+The system should preserve productive struggle.
+
+Guide Mode should not become: “Here is the complete code.”
+
+The goal is to teach the learner how to think.
+
+===============================================================================
+11. SIMPLIFY MODE
+===============================================================================
+
+Simplify Mode exists for learners who cannot handle the complete
+mission.
+
+Instead of removing the problem, Atlas decomposes it into smaller
+stages.
+
+Example:
+
+Original Mission: “Build a follower search system.”
+
+Simplify Mode: Stage 1 -> Understand the data model Stage 2 -> Create
+follower list Stage 3 -> Implement linear search Stage 4 -> Measure
+performance Stage 5 -> Identify bottleneck Stage 6 -> Introduce indexing
+Stage 7 -> Compare approaches Stage 8 -> Reflect
+
+The learner completes one stage before unlocking the next.
+
+Simplify Mode should preserve the underlying learning objective.
+
+===============================================================================
+12. HINT SYSTEM
+===============================================================================
+
+Atlas uses progressive hints.
+
+Level 1: Requirement clarification
+
+Level 2: Concept explanation
+
+Level 3: Approach suggestion
+
+Level 4: Pseudocode
+
+Level 5: Partial implementation
+
+Level 6: Complete solution
+
+The complete solution should be the final escalation, not the default.
+
+Hint usage can affect: - Learning analytics - Mastery interpretation -
+Mission scoring - XP modifiers - Portfolio eligibility, depending on
+mission policy
+
+===============================================================================
+13. ENGINEERING THINKING CANVAS
+===============================================================================
+
+Before the learner writes code, Atlas can guide them through:
+
+STEP 1 — UNDERSTAND - What is the problem? - What inputs exist? - What
+outputs are expected? - What constraints exist?
+
+STEP 2 — DESIGN - What data structures are appropriate? - What
+architecture fits? - What edge cases exist?
+
+STEP 3 — PLAN - Write pseudocode - Break into subtasks - Estimate time
+complexity - Estimate space complexity
+
+STEP 4 — BUILD - Unlock the coding environment
+
+This teaches professional engineering habits instead of immediately
+rewarding code typing.
+
+===============================================================================
+14. ADAPTIVE LEARNING ENGINE
+===============================================================================
+
+The Adaptive Learning Engine (ALE) is the intelligence layer
+connecting: - Lessons - Missions - AI Mentor - Progress -
+Recommendations - Revision - Career goals
+
+ALE should personalize the learning experience continuously.
+
+INPUT SIGNALS
+
+User profile Career goal Preferred language Experience level Daily
+learning time Mission scores Completion time Hint usage AI usage
+Submission attempts Error patterns Weak concepts Strong concepts Common
+mistakes XP Badges Level Streak Compile errors Runtime errors Test
+failures Code quality Complexity Maintainability Naming Architecture
+
+OUTPUTS
+
+-   Personalized roadmap
+-   Recommended lesson
+-   Recommended mission
+-   Revision reminders
+-   Difficulty adjustments
+-   Weekly goals
+-   AI mentoring suggestions
+-   Interview readiness
+-   Learning plans
+
+===============================================================================
+15. KNOWLEDGE MODEL
+===============================================================================
+
+Atlas should track concepts, not only completed pages.
+
+Each concept can store: - Concept ID - Mastery % - Confidence % -
+Practice count - Revision count - Last reviewed - Average score - Hint
+usage - Failure count - Estimated retention - AI notes
+
+Concept states: Not Started -> Learning -> Practicing -> Needs Revision
+-> Mastered -> Expert
+
+Adaptive difficulty: Very Easy -> Easy -> Comfortable -> Stretch ->
+Challenge -> Expert
+
+The learner should not simply unlock advanced concepts because they
+clicked previous lessons. Prerequisites and mastery should matter.
+
+===============================================================================
+16. LEARNING MODES
+===============================================================================
+
+Atlas supports multiple learning modes:
+
+Guided Mode - Maximum assistance - Beginner friendly
+
+Practice Mode - Hints available - AI Mentor active
+
+Challenge Mode - Minimal assistance - Portfolio eligible
+
+Interview Mode - Timed - No hints - Company-style evaluation
+
+Revision Mode - Focused on weak concepts
+
+Sprint Mode - Time-boxed daily missions
+
+===============================================================================
+17. REVISION ENGINE
+===============================================================================
+
+Atlas should use spaced repetition.
+
+Example: Learn today -> Tomorrow -> 3 days -> 7 days -> 14 days -> 30
+days -> 90 days
+
+The schedule should adapt based on mastery and performance.
+
+===============================================================================
+18. SECURE EXECUTION PLATFORM
+===============================================================================
+
+The Secure Execution Platform (SEP) is responsible for: - Compilation -
+Secure execution - Runtime isolation - Test execution - Performance
+benchmarking - Memory measurement - Timeout protection - Resource
+isolation - Output collection - Result reporting - Artifact cleanup
+
+HIGH-LEVEL FLOW
+
+Student -> Engineering Mission Engine -> Submission Service -> Queue ->
+Sandbox Scheduler -> Secure Sandbox -> Compiler -> Test Runner ->
+Performance Analyzer -> Result Generator -> AI Review -> Progress Engine
+
+SANDBOX PRINCIPLES
+
+Every execution should be: - Isolated - Disposable - Stateless -
+Ephemeral - Resource-limited - Observable
+
+Preferred architecture direction: Container Runtime -> Firecracker
+MicroVM -> Docker Image -> Language Runtime -> Student Code
+
+No sandbox should survive after execution.
+
+===============================================================================
+19. PHASE 1 EXECUTION LANGUAGES
+===============================================================================
+
+Programming: - Java - Kotlin - Python - JavaScript - TypeScript - C++ -
+Go
+
+Mobile: - Kotlin / Android components - Limited Swift
+
+Backend: - Spring Boot snippets - Node.js snippets
+
+Future: - Rust - C# - PHP - Ruby - Scala - Dart and broader mobile
+execution
+
+Important: The exact implementation strategy for full Android/iOS
+project execution is an architecture concern and should not be assumed
+to be identical to simple algorithm execution.
+
+===============================================================================
+20. ENGINEERING VALIDATION
+===============================================================================
+
+Atlas should eventually evolve beyond a simple compiler.
+
+A validation pipeline can include:
+
+1.  Compilation
+2.  Unit tests
+3.  Static analysis
+4.  Style / complexity checks
+5.  Security checks
+6.  Performance benchmarks
+7.  Architecture rules
+8.  Accessibility checks
+9.  AI engineering review
+10. Portfolio readiness
+
+Different mission types can use different pipelines.
+
+Example: Android Feature: Compile -> UI Tests -> Architecture -> AI
+Review
+
+Backend API: Compile -> Integration Tests -> Performance -> Security ->
+AI Review
+
+Frontend: Build -> Visual Validation -> Accessibility -> AI Review
+
+The goal is to evaluate engineering work, not just “does it compile?”
+
+===============================================================================
+21. AI MENTOR / ATLAS SENIOR ENGINEER
+===============================================================================
+
+The future Atlas Senior Engineer (ASE) is an AI engineering mentor.
+
+It should help learners: - Think critically - Debug independently -
+Improve architecture - Understand trade-offs - Build confidence -
+Improve engineering judgment
+
+Core rule: Never remove productive struggle.
+
+The AI should not behave as a code vending machine.
+
+AI should understand: - Learner level - Mission context - Previous
+attempts - Errors - Hint usage - Weak concepts - Learning goals -
+Progress
+
+ALE decides WHAT the learner needs. AI Mentor decides HOW to teach it.
+
+This separation is intentional.
+
+===============================================================================
+22. ENGINEERING PROGRESSION
+===============================================================================
+
+Atlas should keep three concepts separate:
+
+1.  Progress XP, levels, streaks, badges and motivation.
+
+2.  Mastery Knowledge and skill development.
+
+3.  Engineering Experience Real evidence of work completed.
+
+A learner should not become an “expert” merely because they earned XP.
+
+Progress should reward meaningful learning activity.
+
+===============================================================================
+23. ENGINEERING EXPERIENCE
+===============================================================================
+
+The platform should eventually maintain an evolving engineering resume.
+
+Examples of evidence: - Features built - Bugs fixed - Technologies
+practiced - Architecture patterns used - Tests written - Performance
+optimizations - Missions completed
+
+Example evidence profile:
+
+Built 42 production-inspired features Resolved 187 software defects
+Designed 15 scalable APIs Completed 23 architecture missions Optimized
+11 applications Wrote 640 automated tests
+
+This is more meaningful than: “Level 73.”
+
+===============================================================================
+24. ENGINEERING PASSPORT
+===============================================================================
+
+Engineering Passport is more than a portfolio.
+
+It is: - Portfolio - Resume - Skill graph - Engineering timeline -
+Learning history - Project showcase - Hiring profile - Evidence record -
+Future trust signals
+
+Core philosophy: A portfolio should PROVE, not merely CLAIM.
+
+Instead of: “I know Android.”
+
+Atlas should eventually be able to show evidence such as: - Built
+Android features - Fixed Android bugs - Completed Compose missions -
+Implemented MVVM - Passed architecture reviews
+
+PRIVATE PASSPORT
+
+May contain: - AI notes - Weak areas - Mistakes - Reflections - Learning
+analytics
+
+PUBLIC PASSPORT
+
+May contain: - Projects - Skills - Achievements - Certificates -
+Engineering experience - Portfolio artifacts
+
+RECRUITER VIEW
+
+Future: - Verified skills - Project evidence - Code samples - Growth
+timeline - Interview readiness
+
+===============================================================================
+25. ENGINEERING STORY UNIVERSE
+===============================================================================
+
+A future differentiator is to create a fictional but realistic software
+company environment.
+
+Instead of solving unrelated missions, learners may work inside a
+continuously evolving software organization.
+
+Example progression: Intern -> Junior Engineer -> Software Engineer ->
+Senior Engineer -> Tech Lead -> Staff Engineer -> Principal Engineer ->
+Engineering Manager
+
+Projects evolve over time: - Build a messaging app - Add stories - Scale
+to millions of users - Handle outages - Optimize performance - Introduce
+monetization - Expand internationally
+
+The learner experiences: - New features - Legacy code - Technical debt -
+Production bugs - Migrations - Scaling problems - Architecture decisions
+
+This concept is future-facing and should not be assumed to be fully
+implemented in the MVP.
+
+===============================================================================
+26. FUTURE HIRING ECOSYSTEM
+===============================================================================
+
+The Engineering Talent Network (ETN) is a future module.
+
+Companies could: - Publish jobs - Publish assessments - Review
+Engineering Passports - View verified evidence - Invite candidates -
+Conduct assessments - Build hiring pipelines - Make offers
+
+Universities could: - Track aggregate student progress - Recommend
+students - Host internal assessments - Organize placement drives
+
+Recruiters could filter by: - Track - Technology - Mission count -
+Project count - Verified skills - Experience level - Country -
+Language - Availability - Portfolio visibility
+
+A future Verified Engineering Record (VER) could connect every major
+engineering achievement to the actual mission and review that produced
+it.
+
+The hiring ecosystem is explicitly outside the current MVP scope.
+
+===============================================================================
+27. ADMIN / ATLAS CONTROL CENTER
+===============================================================================
+
+Atlas Control Center (ACC) is the internal operating system for Atlas.
+
+It should eventually manage: - Users - Roles - Permissions - Learning
+content - Missions - Mission Studio - AI prompts - AI safety -
+Analytics - Moderation - Companies - Feature flags - Infrastructure -
+Notifications - Audit logs - Experiments - Support
+
+A major future feature is Mission Studio.
+
+Mission Studio should allow non-engineering curriculum creators to
+configure: - Story - Business context - Learning objectives -
+Difficulty - Concepts - Stages - Guide behavior - Hint progression -
+Validation - Hidden tests - AI prompts - Rewards - Portfolio artifacts -
+Acceptance criteria
+
+===============================================================================
+28. CURRENT MVP SCOPE
+===============================================================================
+
+MVP INCLUDES: - Authentication - Dashboard - Learning Paths - Lessons -
+Mission Engine - Simplify Mode - Guide Mode - Hint System - Code
+Editor - Compiler - Hidden Tests - XP - Portfolio - AI Review - Admin
+Panel
+
+MVP EXCLUDES: - Team Collaboration - Hiring Platform - Live
+Competitions - Marketplace - Voice Mentor - Mobile Applications
+
+These boundaries come from the approved PRD and should not be casually
+expanded.
+
+===============================================================================
+29. PRODUCT ROADMAP
+===============================================================================
+
+High-level roadmap:
+
+Phase 1 — Foundations - Core platform - Authentication - Learning
+foundation - Missions - Execution - Progress - Portfolio - Admin
+
+Phase 2 — AI Learning - Adaptive learning - AI mentor - Personalized
+recommendations - Knowledge gap detection - Advanced guidance
+
+Phase 3 — Engineering Simulator - Story Universe - Advanced engineering
+workflows - Larger project simulations - Production-like scenarios
+
+Phase 4 — Collaboration - Team missions - Pair programming -
+Collaborative engineering
+
+Phase 5 — Hiring Platform - Companies - Recruiters - Assessments -
+Verified engineering evidence - Hiring pipelines
+
+Phase 6 — Atlas Ecosystem - Universities - Enterprise - SDK - Plugins -
+Marketplace / ecosystem - Broader engineering tracks
+
+===============================================================================
+30. CURRENT TECHNICAL IMPLEMENTATION / PROTOTYPE
+===============================================================================
+
+The currently developed prototype is a Vite ReactJS + Vanilla CSS
+frontend and Node.js + Express backend with SQLite persistence.
+
+PROJECT STRUCTURE
+
+Atlas/ | +– frontend/ | +– src/ | | +– components/ | | +– App.jsx | | +–
+index.css | | +– main.jsx | +– package.json | +– index.html | +–
+backend/ | +– server.js | +– db.js | +– package.json | +– .env | +– db/
+| +– atlas.sqlite | +– docs/ | +– product documentation | +– README.md
+
+FRONTEND
+
+-   ReactJS
+-   Vite
+-   Vanilla CSS
+-   Lucide React
+-   Hash-based routing / state orchestration in current prototype
+
+BACKEND
+
+-   Node.js
+-   Express.js
+-   SQLite
+-   Google Gemini integration
+-   Current benchmark/compiler simulation
+
+DATABASE
+
+Current prototype uses SQLite.
+
+The current schema includes prototype tables such as: - users -
+missions - chat_messages
+
+The final production schema will need to expand substantially to
+support: - authentication identities - sessions - learning profiles -
+knowledge graph - mastery - mission stages - submissions - execution
+results - AI sessions - portfolio - analytics - audit logs and other
+modules defined in the architecture.
+
+===============================================================================
+31. CURRENT PROTOTYPE UI
+===============================================================================
+
+The existing prototype has these major views/components:
+
+1.  Onboarding / Access Portal
+2.  Dashboard
+3.  Mission IDE
+4.  Logic Practice / Logic Sandbox
+5.  Engineering Passport
+6.  Career Vault
+7.  Admin Center / Atlas Control Center
+
+CURRENT ONBOARDING PROTOTYPE
+
+The prototype has a cyberpunk-style onboarding experience including: -
+Student/Admin mode - Security keypad concept - Telemetry/decryption
+terminal - Callsign onboarding - Track selection - Radar/badge
+verification
+
+CURRENT DASHBOARD PROTOTYPE
+
+Includes concepts such as: - Engineering maturity - Learning velocity -
+Code quality - Live execution map - AI Mentor chat - User metrics
+
+CURRENT MISSION IDE
+
+The prototype demonstrates: - Kotlin file tree - Code editor - Linear
+O(N) example - Optimize action - Execute compiler action - Console
+output - Performance metrics
+
+CURRENT LOGIC SANDBOX
+
+Prototype challenges include: - Email syntax validation - Instagram
+follower sorting/search - Pub/Sub dispatching - Memory leak analysis
+
+CURRENT PASSPORT
+
+Prototype includes: - Student identity - XP - Level - Mission history -
+Proof hashes - Skill records
+
+CURRENT CAREER VAULT
+
+Prototype includes: - Architecture visualization - Example SaaS
+architecture - Resume generation concept
+
+CURRENT ADMIN CENTER
+
+Prototype includes: - User directory - Roles - Multiple admin modules -
+Feature flags - System logs - Administrative controls
+
+===============================================================================
+32. CURRENT PROTOTYPE BACKEND
+===============================================================================
+
+The prototype backend runs on port 5001.
+
+Current/known API concepts include:
+
+POST /api/auth/onboard POST /api/auth/login GET /api/auth/me/:callsign
+
+GET /api/users PUT /api/users/:id/role
+
+POST /api/missions/execute
+
+GET /api/mentor/history/:userId POST /api/mentor/chat
+
+IMPORTANT: These are current prototype endpoints, not automatically the
+final production API contract.
+
+Production API design should be defined in Architecture.md and versioned
+appropriately.
+
+===============================================================================
+33. CURRENT COMPILER / BENCHMARK PROTOTYPE
+===============================================================================
+
+The current prototype does NOT represent a production-grade secure
+compiler.
+
+It currently uses a Node.js-based benchmark/emulation approach.
+
+The prototype detects whether submitted code appears optimized using
+markers such as: - TrieNode - buildIndex - Trie
+
+If an optimized pattern is detected, the prototype returns simulated
+performance values.
+
+If a linear implementation is detected, it returns a slower simulated
+benchmark.
+
+This is useful for demonstrating the Atlas product concept, but it is
+NOT a secure code execution system.
+
+DO NOT describe the current prototype as a production compiler or secure
+sandbox.
+
+The production direction is the Secure Execution Platform described
+earlier.
+
+===============================================================================
+34. CURRENT AUTHENTICATION STATE
+===============================================================================
+
+Google OAuth: - Google Cloud OAuth client has been created. - OAuth
+client name used during setup: Atlas Web. - Client type: Web
+application. - Local frontend is running on port 5173. - Local backend
+is running on port 5001. - Google integration still needs end-to-end
+verification in the implementation.
+
+GitHub OAuth: - GitHub OAuth App has been created. - Application name:
+Atlas. - Local homepage was configured as: http://localhost:5173 -
+Callback was configured as: http://localhost:5001/auth/github/callback
+
+Known issue: GitHub currently showed: “The redirect_uri is not
+associated with this application.”
+
+This indicates the redirect_uri being sent by the running application
+does not exactly match the GitHub OAuth application’s configured
+callback URL.
+
+The callback must match exactly.
+
+Do not assume GitHub authentication is complete until the end-to-end
+flow succeeds.
+
+===============================================================================
+35. GEMINI / AI API
+===============================================================================
+
+Atlas plans to use Gemini for AI features.
+
+The API key belongs in: backend/.env
+
+Example variable: GEMINI_API_KEY=…
+
+Never: - Commit the key - Put the secret in frontend code - Expose the
+key to browser clients
+
+The backend should call Gemini.
+
+Current AI prototype uses Gemini or fallback heuristics for mentor
+interactions.
+
+Future AI architecture should include: - Model abstraction - Prompt
+management - Safety rules - Rate limits - Usage tracking - Cost
+tracking - Context management - Evaluation - Fallback behavior
+
+===============================================================================
+36. ENVIRONMENT & GIT SECURITY
+===============================================================================
+
+Sensitive environment files must not be committed.
+
+Ignored: - backend/.env - frontend/.env - root .env
+
+Recommended tracked files: - backend/.env.example -
+frontend/.env.example
+
+The repository should also ignore: - node_modules - build artifacts -
+logs - local OS files - local IDE files - SQLite WAL/SHM files where
+appropriate
+
+If secrets were ever committed, removing them from .gitignore is NOT
+enough. They must be removed from Git history and the exposed
+credentials should be rotated.
+
+===============================================================================
+37. DEPLOYMENT STATE
+===============================================================================
+
+Current frontend deployment: - Vercel is being used. - A Vercel URL
+exists for the Atlas frontend.
+
+Local development: Frontend: http://localhost:5173
+
+Backend: http://localhost:5001
+
+Production deployment is not considered complete until: - Frontend
+production environment variables are configured - Backend is deployed -
+Database strategy is configured - CORS is correct - HTTPS is enabled -
+OAuth production callbacks are configured - Production AI keys are
+configured securely - Monitoring is enabled - End-to-end authentication
+works - Custom domain is connected
+
+===============================================================================
+38. DOMAIN / BRANDING CONTEXT
+===============================================================================
+
+Current product brand: Atlas
+
+The name Atlas is intentionally being used as the platform brand.
+
+Domain exploration has included names such as: - atlascodespace.com -
+atlasstudioz.com - atlasdevhub.com
+
+atlasdevhub.com was shown as available by the domain checker used during
+exploration.
+
+IMPORTANT: A domain checker result is not the same as a final registrar
+purchase. Domain availability must be verified at the time of purchase.
+
+Current candidate: atlasdevhub.com
+
+This is branding context, not a final locked decision unless separately
+approved.
+
+===============================================================================
+39. WHAT ATLAS SHOULD FEEL LIKE
+===============================================================================
+
+Atlas should feel: - Professional - Engineering-first - Modern -
+Intelligent - Structured - Challenging but supportive -
+Career-oriented - Production-inspired
+
+It should NOT feel like: - A children’s gamification app - A generic
+course website - A pure competitive programming judge - A code-answer
+generator - A social media platform disguised as learning
+
+The learner should feel: “I am becoming an engineer.”
+
+Not: “I am collecting points.”
+
+===============================================================================
+40. CORE NAVIGATION CONCEPT
+===============================================================================
+
+The exact final navigation can evolve, but the current product
+vocabulary includes concepts such as:
+
+Dashboard Learn Logic Lab Mission Studio / Mission Engine Engineering
+Workspace Passport Progress Career / Hiring Admin
+
+“CodeSpace” is not a required Atlas product term.
+
+Possible coding workspace naming: - Atlas Studio - Atlas Forge - Mission
+Studio - Engineering Workspace - Engineering Lab
+
+Final naming should be governed by Design.md / product decisions.
+
+===============================================================================
+41. PROJECT DOCUMENTATION SYSTEM
+===============================================================================
+
+Recommended documentation:
+
+PRD.md
+
+Defines WHAT and WHY. Product requirements, scope, user stories, flows,
+acceptance criteria, priorities.
+
+Architecture.md
+
+Defines HOW. System architecture, services, APIs, database,
+infrastructure, execution architecture, security architecture.
+
+Design.md
+
+Defines HOW IT LOOKS. Design system, UI, UX, navigation, typography,
+spacing, responsive behavior, components, states.
+
+Rules.md
+
+Defines WHAT MUST / MUST NOT HAPPEN. Coding rules, architecture rules,
+AI behavior rules, security rules, product constraints.
+
+Memory.md
+
+Stores long-term project context and important decisions. Avoid using it
+as a replacement for formal requirements.
+
+intro.txt
+
+Provides onboarding context for humans and AI agents. It should explain
+the project but should not override approved specifications.
+
+TODO / PROJECT TRACKER
+
+Tracks: - Completed - In progress - Blocked - Remaining work
+
+===============================================================================
+42. CURRENT MVP RISKS
+===============================================================================
+
+Major risks identified by the PRD:
+
+1.  Overly ambitious MVP
+2.  High infrastructure cost
+3.  AI hallucinations
+4.  Challenge content quality
+5.  Scaling compiler infrastructure
+6.  Maintaining multiple language runtimes
+
+Additional practical risk: The product has many ambitious modules.
+Development should remain phased and should not attempt to build every
+future concept simultaneously.
+
+===============================================================================
+43. SUCCESS METRICS
+===============================================================================
+
+TECHNICAL
+
+-   Crash-free sessions
+-   API latency
+-   Compiler success rate
+
+LEARNING
+
+-   Lesson completion rate
+-   Mission completion rate
+-   Guide Mode usage
+-   Hint usage
+-   Knowledge retention
+
+BUSINESS
+
+-   DAU
+-   WAU
+-   MAU
+-   Premium conversion
+-   Student retention
+-   Portfolio completion
+-   Interview success rate
+
+Future metrics should also evaluate whether learners actually improve
+engineering ability.
+
+===============================================================================
+44. FUTURE PLATFORM EXTENSIBILITY
+===============================================================================
+
+Long-term architecture should support adding new tracks without
+rewriting the entire core platform.
+
+Potential future tracks: - Swift / iOS - Flutter - React - Next.js -
+Node.js - Spring Boot - Python - Go - Rust - DevOps - Cloud - AI/ML -
+Cybersecurity - Game Development
+
+Long-term possibilities: - Platform SDK - Plugin architecture -
+University-specific curriculum - Company-specific onboarding -
+Enterprise training - White-label deployments - Custom engineering
+tracks
+
+The platform should be extensible, but extensibility should not
+unnecessarily overcomplicate the MVP.
+
+===============================================================================
+45. DEVELOPMENT PRIORITY
+===============================================================================
+
+P0 — FOUNDATION
+
+-   Documentation
+-   Repository
+-   Environment management
+-   Authentication
+-   Database foundation
+-   Backend foundation
+-   Onboarding
+
+P1 — CORE LEARNING
+
+-   Dashboard
+-   Learning Paths
+-   Lessons
+-   Mission Engine
+-   Guide Mode
+-   Simplify Mode
+-   Hint System
+
+P1 — EXECUTION
+
+-   Code editor
+-   Submission service
+-   Compiler
+-   Hidden tests
+-   Sandbox
+-   Performance validation
+
+P2 — INTELLIGENCE
+
+-   Adaptive Learning Engine
+-   AI Mentor
+-   AI Review
+-   Knowledge graph
+-   Recommendations
+-   Revision
+
+P2 — PROGRESSION
+
+-   XP
+-   Levels
+-   Streaks
+-   Badges
+-   Mastery
+-   Engineering Experience
+
+P2 — CAREER EVIDENCE
+
+-   Engineering Passport
+-   Portfolio
+-   Resume
+-   Public profile
+
+P3 — INTERNAL PLATFORM
+
+-   Admin Center
+-   Mission Studio
+-   Analytics
+-   Feature flags
+-   Audit logs
+
+FUTURE
+
+-   Story Universe
+-   Collaboration
+-   Hiring
+-   Universities
+-   Enterprise
+-   Marketplace
+-   Mobile applications
+-   Plugin ecosystem
+
+===============================================================================
+46. IMPORTANT IMPLEMENTATION RULES FOR AI CODING AGENTS
+===============================================================================
+
+Before modifying Atlas:
+
+1.  Read intro.txt.
+2.  Read the relevant PRD.
+3.  Read Architecture.md before changing backend architecture.
+4.  Read Design.md before changing UI patterns.
+5.  Read Rules.md before changing conventions.
+6.  Check the TODO tracker.
+7.  Inspect existing implementation before creating new files.
+8.  Reuse existing services/components where appropriate.
+9.  Do not invent APIs that already exist.
+10. Do not silently change database models.
+11. Do not expose secrets.
+12. Do not put AI provider keys in frontend code.
+13. Do not treat prototype benchmark logic as a real secure compiler.
+14. Do not implement future features unless the current task explicitly
+    requires them.
+15. Do not expand MVP scope without approval.
+16. Preserve backward compatibility where practical.
+17. Handle loading, empty, success, and error states.
+18. Validate inputs at the API boundary.
+19. Enforce authentication and authorization server-side.
+20. Update documentation when architecture or product behavior changes.
+
+===============================================================================
+47. WHAT IS ALREADY BUILT VS WHAT IS PLANNED
+===============================================================================
+
+CURRENT PROTOTYPE / BUILT CONCEPTS
+
+-   React/Vite frontend
+-   Vanilla CSS design system/prototype
+-   Node/Express backend
+-   SQLite database
+-   Onboarding view
+-   Dashboard view
+-   Mission IDE
+-   Logic Sandbox
+-   Engineering Passport
+-   Career Vault
+-   Admin Center
+-   Prototype APIs
+-   AI mentor chat prototype
+-   Kotlin benchmark simulation
+-   User/mission/chat persistence
+-   Vercel frontend deployment
+-   Google OAuth credentials created
+-   GitHub OAuth application created
+-   Gemini API setup being integrated
+
+NEEDS COMPLETION / HARDENING
+
+-   Production authentication
+-   Google OAuth end-to-end
+-   GitHub OAuth callback fix
+-   Final database architecture
+-   Real learning engine
+-   Real mission engine
+-   Real Guide Mode
+-   Real Simplify Mode
+-   Real hint system
+-   Production-grade code execution
+-   Secure sandbox infrastructure
+-   Hidden tests
+-   AI review architecture
+-   Adaptive learning
+-   Progression
+-   Engineering Passport
+-   Admin CMS
+-   Production backend
+-   Production domain
+-   Production security
+-   Testing
+-   Monitoring
+
+FUTURE
+
+-   Full Atlas Senior Engineer
+-   Engineering Story Universe
+-   Hiring platform
+-   University portal
+-   Enterprise platform
+-   Collaboration
+-   Marketplace
+-   Mobile apps
+-   Plugin/SDK ecosystem
+
+===============================================================================
+48. THE MOST IMPORTANT MENTAL MODEL
+===============================================================================
+
+Atlas is not a collection of pages.
+
+It is a connected learning system.
+
+The learner generates data through learning behavior:
+
+Profile -> Learning Path -> Lessons -> Missions -> Attempts -> Hints ->
+Compiler Results -> Errors -> AI Guidance -> Reflections -> Mastery ->
+Progress -> Engineering Experience -> Passport -> Career Evidence
+
+The Adaptive Learning Engine consumes this information and continuously
+improves the next learning experience.
+
+The Mission Engine turns learning into engineering work.
+
+The Secure Execution Platform validates the work.
+
+The AI Mentor helps the learner think.
+
+The Progression System motivates meaningful activity.
+
+The Engineering Passport turns completed work into evidence.
+
+The future Hiring Network connects evidence with opportunities.
+
+This connected loop is the core of Atlas.
+
+===============================================================================
+49. FINAL PRODUCT VISION
+===============================================================================
+
+Atlas aims to become a comprehensive software engineering development
+ecosystem where a person can:
+
+START AS A BEGINNER -> LEARN FUNDAMENTALS -> BUILD LOGIC -> LEARN
+TECHNOLOGIES -> BUILD REAL FEATURES -> DEBUG REALISTIC SYSTEMS ->
+OPTIMIZE SOFTWARE -> LEARN ENGINEERING PRACTICES -> BUILD VERIFIED
+EXPERIENCE -> CREATE A PROFESSIONAL ENGINEERING PASSPORT -> BECOME
+INTERVIEW READY -> CONNECT WITH EMPLOYERS
+
+The long-term ambition is to connect learning, practice, engineering
+simulation, AI mentorship, verified evidence, and career opportunities
+into one system.
+
+The product should remain focused on one central promise:
+
+ATLAS DOES NOT JUST TEACH PEOPLE TO CODE. ATLAS TEACHES PEOPLE TO
+ENGINEER.
+
+===============================================================================
+50. QUICK REFERENCE
+===============================================================================
+
+PRODUCT
+
+Atlas
+
+TYPE
+
+AI-powered software engineering learning ecosystem
+
+PRIMARY USER
+
+Student / learner
+
+CORE ENGINE
+
+Engineering Mission Engine (EME)
+
+PERSONALIZATION
+
+Adaptive Learning Engine (ALE)
+
+EXECUTION
+
+Secure Execution Platform (SEP)
+
+AI MENTOR
+
+Atlas Senior Engineer (ASE)
+
+PROFESSIONAL IDENTITY
+
+Engineering Passport (EP)
+
+INTERNAL ADMIN PLATFORM
+
+Atlas Control Center (ACC)
+
+FUTURE HIRING
+
+Engineering Talent Network (ETN)
+
+CURRENT FRONTEND
+
+React + Vite + Vanilla CSS
+
+CURRENT BACKEND
+
+Node.js + Express
+
+CURRENT DATABASE
+
+SQLite prototype
+
+CURRENT LOCAL FRONTEND
+
+http://localhost:5173
+
+CURRENT LOCAL BACKEND
+
+http://localhost:5001
+
+AI PROVIDER
+
+Google Gemini
+
+CURRENT DEPLOYMENT
+
+Vercel frontend
+
+MVP PHILOSOPHY
+
+Learn -> Think -> Build -> Validate -> Reflect -> Prove -> Grow
+
+CORE DIFFERENTIATOR
+
+Real-world engineering learning instead of isolated coding questions.
+
+===============================================================================
+END OF INTRODUCTION
+===============================================================================

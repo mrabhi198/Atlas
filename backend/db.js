@@ -259,6 +259,17 @@ export async function initDb() {
   `);
 
   // -------------------------------------------------------------
+  // Security Tags (Dynamic Roles)
+  // -------------------------------------------------------------
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS security_tags (
+      id TEXT PRIMARY KEY,
+      name TEXT UNIQUE NOT NULL,
+      created_at TEXT
+    )
+  `);
+
+  // -------------------------------------------------------------
   // NEW Phase 3 Learning Module tables
   // -------------------------------------------------------------
 
@@ -747,6 +758,19 @@ class TrieNode {
       'INSERT OR REPLACE INTO lesson_progress (user_id, lesson_id, status, progress_percent, last_position, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
       ['usr_1', 'less_back_2', 'in_progress', 45, 120, timestamp]
     );
+
+    // Seed Security Tags (Dynamic Roles)
+    const tagCount = await db.get('SELECT COUNT(*) as count FROM security_tags');
+    if (tagCount.count === 0) {
+      const defaultTags = ['jr architect', 'admin', 'super admin', 'mentor', 'guider', 'Student'];
+      for (const tag of defaultTags) {
+        await db.run('INSERT INTO security_tags (id, name, created_at) VALUES (?, ?, ?)', [
+          'tag_' + Date.now() + Math.random().toString(36).substr(2, 9),
+          tag,
+          timestamp
+        ]);
+      }
+    }
 
     console.log('Database initialized. Pre-hashed admin user nodes and dashboard data seeded.');
   }
