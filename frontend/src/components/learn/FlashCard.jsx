@@ -13,6 +13,13 @@ export default function FlashCard({ card, onRated }) {
     setFlipped(!flipped);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleFlip();
+    }
+  };
+
   const handleRate = (e, rating) => {
     e.stopPropagation();
     if (onRated) {
@@ -33,6 +40,11 @@ export default function FlashCard({ card, onRated }) {
         cursor: 'pointer'
       }}
       onClick={handleFlip}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-pressed={flipped}
+      aria-label={flipped ? 'Flashcard answer shown. Press Enter or Space to flip back to question.' : 'Flashcard question. Press Enter or Space to reveal answer.'}
     >
       <div 
         className={`flashcard-inner ${flipped ? 'flipped' : ''}`}

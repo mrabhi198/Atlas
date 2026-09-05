@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Shield, Key, Mail, Lock, User, Cpu } from 'lucide-react';
+import { Shield, Mail, Lock } from 'lucide-react';
+import { apiFetch, apiUrl } from '../../api/client';
+import { Button, Field, Alert } from '../../components/shared';
 
 export default function Login({ 
   onLoginSuccess, 
@@ -19,9 +21,8 @@ export default function Login({
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/auth/login`, {
+      const res = await apiFetch('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ loginId, password })
       });
 
@@ -45,8 +46,7 @@ export default function Login({
 
   const handleOAuthLogin = (provider) => {
     setIsLoading(true);
-    const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
-    window.location.href = `${backendUrl}/auth/${provider}`;
+    window.location.href = apiUrl(`/auth/${provider}`);
   };
 
   return (
@@ -58,62 +58,60 @@ export default function Login({
       </div>
 
       {errorMsg && (
-        <div className="admin-alert error font-mono" style={{ fontSize: '11px', marginBottom: '16px', wordBreak: 'break-all' }}>
+        <Alert variant="danger" className="font-mono" style={{ fontSize: '11px', marginBottom: '16px' }}>
           {errorMsg}
-        </div>
+        </Alert>
       )}
 
       <form onSubmit={handlePasswordLogin} className="credentials-form" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div className="form-group" style={{ textAlign: 'left' }}>
-          <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>EMAIL OR USERNAME</label>
-          <div style={{ position: 'relative' }}>
-            <Mail size={14} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-dim)' }} />
-            <input
-              type="text"
-              required
-              placeholder="Enter email or username"
-              value={loginId}
-              onChange={e => setLoginId(e.target.value)}
-              className="tech-input font-mono"
-              style={{ paddingLeft: '36px', textTransform: 'none', background: '#020204' }}
-            />
-          </div>
-        </div>
+        <Field
+          label="EMAIL OR USERNAME"
+          required
+          className="font-mono"
+          icon={<Mail size={14} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-dim)' }} aria-hidden="true" />}
+          type="text"
+          placeholder="Enter email or username"
+          value={loginId}
+          onChange={e => setLoginId(e.target.value)}
+          autoComplete="email"
+          style={{ paddingLeft: '36px', background: '#020204' }}
+        />
 
-        <div className="form-group" style={{ textAlign: 'left' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-            <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>PASSWORD</label>
-            <button 
-              type="button" 
-              onClick={onNavigateToForgot}
-              className="font-mono" 
-              style={{ background: 'none', border: 'none', color: 'var(--neon-cyan)', fontSize: '10px', cursor: 'pointer' }}
-            >
-              FORGOT?
-            </button>
-          </div>
-          <div style={{ position: 'relative' }}>
-            <Lock size={14} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-dim)' }} />
-            <input
-              type="password"
-              required
-              placeholder="Enter secure passcode"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="tech-input font-mono"
-              style={{ paddingLeft: '36px', textTransform: 'none', background: '#020204' }}
-            />
-          </div>
-        </div>
+        <Field
+          label={
+            <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+              <span>PASSWORD</span>
+              <button 
+                type="button" 
+                onClick={onNavigateToForgot}
+                className="font-mono" 
+                style={{ background: 'none', border: 'none', color: 'var(--neon-cyan)', fontSize: '10px', cursor: 'pointer' }}
+              >
+                FORGOT?
+              </button>
+            </span>
+          }
+          required
+          className="font-mono"
+          icon={<Lock size={14} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-dim)' }} aria-hidden="true" />}
+          type="password"
+          placeholder="Enter secure passcode"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          autoComplete="current-password"
+          style={{ paddingLeft: '36px', background: '#020204' }}
+        />
 
-        <button 
-          type="submit" 
-          disabled={isLoading}
-          className="neon-btn accent font-sans w-full"
+        <Button
+          type="submit"
+          variant="accent"
+          block
+          loading={isLoading}
+          className="font-sans"
           style={{ padding: '12px', height: 'auto', textShadow: 'none' }}
         >
           {isLoading ? 'DECRYPTING SIGNATURE...' : 'AUTHENTICATE SESSION'}
-        </button>
+        </Button>
       </form>
 
       {/* Divider */}
@@ -125,20 +123,24 @@ export default function Login({
 
       {/* OAuth Grid */}
       <div style={{ display: 'flex', gap: '12px' }}>
-        <button 
+        <Button 
           onClick={() => handleOAuthLogin('google')} 
-          className="neon-btn secondary font-mono"
+          variant="secondary"
+          disabled={isLoading}
+          className="font-mono"
           style={{ flex: 1, padding: '10px', fontSize: '11px', textShadow: 'none', height: 'auto' }}
         >
           Google
-        </button>
-        <button 
+        </Button>
+        <Button 
           onClick={() => handleOAuthLogin('github')} 
-          className="neon-btn secondary font-mono"
+          variant="secondary"
+          disabled={isLoading}
+          className="font-mono"
           style={{ flex: 1, padding: '10px', fontSize: '11px', textShadow: 'none', height: 'auto' }}
         >
           GitHub
-        </button>
+        </Button>
       </div>
 
       {/* Bottom Switch Links */}

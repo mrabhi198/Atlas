@@ -13,8 +13,7 @@ import {
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/atom-one-dark.css';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
+import { apiFetch } from '../../api/client';
 
 export default function LessonViewer({ lessonId, accessToken, onBack }) {
   const [data, setData] = useState(null);
@@ -24,6 +23,7 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
   // Quiz State
   const [quizAnswers, setQuizAnswers] = useState({});
   const [quizResults, setQuizResults] = useState(null);
+  const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
     loadLesson();
@@ -31,9 +31,7 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
 
   const loadLesson = async () => {
     try {
-      const res = await fetch(`${API_BASE}/lessons/${lessonId}`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
+      const res = await apiFetch(`/lessons/${lessonId}`, { token: accessToken });
       if (res.ok) {
         const json = await res.json();
         setData(json);
@@ -47,12 +45,9 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
 
   const handleToggleBookmark = async () => {
     try {
-      const res = await fetch(`${API_BASE}/bookmarks`, {
+      const res = await apiFetch('/bookmarks', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ item_type: 'lesson', item_id: lessonId })
       });
       if (res.ok) {
@@ -68,12 +63,9 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
     e.preventDefault();
     if (!newNote.trim()) return;
     try {
-      const res = await fetch(`${API_BASE}/lessons/${lessonId}/notes`, {
+      const res = await apiFetch(`/lessons/${lessonId}/notes`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ text: newNote })
       });
       if (res.ok) {
@@ -87,9 +79,9 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
 
   const handleDeleteNote = async (noteId) => {
     try {
-      const res = await fetch(`${API_BASE}/lessons/notes/${noteId}`, {
+      const res = await apiFetch(`/lessons/notes/${noteId}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
+        token: accessToken
       });
       if (res.ok) {
         loadLesson();
@@ -100,31 +92,31 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
   };
 
   const handleCompleteLesson = async () => {
+    setActionError(null);
     try {
-      const res = await fetch(`${API_BASE}/lessons/${lessonId}/progress`, {
+      const res = await apiFetch(`/lessons/${lessonId}/progress`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ status: 'completed', progress_percent: 100, last_position: 100 })
       });
       if (res.ok) {
         loadLesson();
+      } else {
+        const json = await res.json().catch(() => ({}));
+        setActionError(json.error || 'Failed to complete lesson. Please try again.');
       }
     } catch (err) {
       console.error(err);
+      setActionError('Connection lost. Failed to update lesson progress.');
     }
   };
 
   const handleSubmitQuiz = async () => {
+    setActionError(null);
     try {
-      const res = await fetch(`${API_BASE}/quiz/submit`, {
+      const res = await apiFetch('/quiz/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({
           lesson_id: lessonId,
           answers: Object.keys(quizAnswers).map(qIdx => ({
@@ -136,9 +128,13 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
       if (res.ok) {
         const json = await res.json();
         setQuizResults(json);
+      } else {
+        const json = await res.json().catch(() => ({}));
+        setActionError(json.error || 'Failed to submit quiz. Please try again.');
       }
     } catch (err) {
       console.error(err);
+      setActionError('Connection lost. Failed to submit quiz.');
     }
   };
 
@@ -197,6 +193,13 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
             {isCompleted ? 'COMPLETED' : 'MARK COMPLETE'}
           </button>
         </div>
+
+        {actionError && (
+          <div className="font-mono" style={{ marginTop: '10px', fontSize: '12px', color: 'var(--neon-red)' }}>
+            <AlertCircle size={13} style={{ verticalAlign: '-2px', marginRight: '6px' }} />
+            {actionError}
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '40px' }}>
@@ -225,7 +228,7 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
                   <p className="font-sans" style={{ color: '#fff', marginBottom: '14px', fontWeight: 'bold' }}>{qIdx + 1}. {q.question}</p>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {q.options.map((opt, oIdx) => {
+                    {(q.options || []).map((opt, oIdx) => {
                       const isSelected = quizAnswers[qIdx] === oIdx;
                       let optionStyle = { 
                         padding: '12px', 

@@ -244,16 +244,38 @@ Atlas/
 │
 ├── frontend/                # React + Vite SPA
 │   ├── src/
-│   ├── components/
-│   ├── App.jsx
-│   └── index.css
+│   │   ├── api/             # Shared API client (client.js)
+│   │   ├── components/      # Feature folders
+│   │   │   ├── auth/
+│   │   │   ├── dashboard/
+│   │   │   ├── admin/
+│   │   │   ├── mission/
+│   │   │   ├── learn/
+│   │   │   ├── passport/
+│   │   │   ├── career/
+│   │   │   ├── practice/
+│   │   │   ├── onboarding/
+│   │   │   ├── settings/
+│   │   │   └── layout/      # Sidebar
+│   │   ├── App.jsx
+│   │   └── index.css
+│   └── .env.example
 │
 ├── backend/                 # Express APIs
-│   ├── server.js
-│   └── db.js
+│   ├── src/
+│   │   ├── config/          # Settings + secrets
+│   │   ├── db/              # index.js (init) + schema.js + seed.js
+│   │   ├── middleware/
+│   │   ├── routes/          # Route modules
+│   │   ├── services/        # AI, compiler, git, email (AI_SIM)
+│   │   ├── utils/
+│   │   └── scripts/         # reset-db.js
+│   ├── app.js               # app factory (createApp)
+│   ├── server.js            # entry point
+│   └── .env.example
 │
 ├── db/
-│   └── atlas.sqlite
+│   └── atlas.sqlite         # runtime DB (git-ignored)
 │
 ├── docs/                    # PRDs & Documentation
 │
@@ -294,7 +316,7 @@ http://localhost:5173
 ```bash
 cd backend
 npm install
-node server.js
+npm run start
 ```
 
 Backend runs on:
@@ -307,7 +329,7 @@ http://localhost:5001
 
 ## Environment Variables
 
-Create a `.env` file inside the `backend/` directory.
+Create a `.env` file inside the `backend/` directory (`backend/.env.example` documents every variable):
 
 ```env
 PORT=5001
@@ -318,6 +340,8 @@ GEMINI_API_KEY=YOUR_API_KEY
 
 JWT_SECRET=YOUR_SECRET
 ```
+
+The frontend optionally uses `frontend/.env` with `VITE_API_BASE_URL` (defaults to `http://localhost:5001/api`).
 
 ---
 

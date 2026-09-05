@@ -730,10 +730,14 @@ frontend and Node.js + Express backend with SQLite persistence.
 
 PROJECT STRUCTURE
 
-Atlas/ | +– frontend/ | +– src/ | | +– components/ | | +– App.jsx | | +–
-index.css | | +– main.jsx | +– package.json | +– index.html | +–
-backend/ | +– server.js | +– db.js | +– package.json | +– .env | +– db/
-| +– atlas.sqlite | +– docs/ | +– product documentation | +– README.md
+Atlas/ | +– frontend/ | +– src/ | | +– api/ (shared client) | +– components/ |
++– (auth, dashboard, admin, mission, learn, passport, career, practice,
+onboarding, settings, layout) | +– App.jsx | +– index.css | +– main.jsx |
++– package.json | +– index.html | +- .env.example | +– backend/ | +– src/ |
++– (config, db, middleware, routes, services, utils, scripts) | +– app.js |
++– server.js | +– package.json | +– .env | +– .env.example | +– db/ |
++– atlas.sqlite | +– docs/ | +– product documentation + file-structure.md |
++– README.md
 
 FRONTEND
 
