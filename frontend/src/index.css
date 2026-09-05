@@ -5366,3 +5366,259 @@ p {
     width: 100%;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   PASSPORT IMPROVEMENT
+   Restores identity/metrics from real platform data; removes
+   fabricated hashes, latency claims, and dead share links.
+   ══════════════════════════════════════════════════════════════ */
+
+.passport-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.passport-verified-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--neon-green);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-family: var(--font-mono, monospace);
+}
+
+.passport-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 11.5px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.passport-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.passport-metric {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.passport-metric__value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.passport-metric__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-dim);
+}
+
+@media (max-width: 900px) {
+  .passport-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Status pills */
+.status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.status-verified {
+  color: var(--neon-green);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-pending {
+  color: var(--neon-yellow);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Engineering journey timeline */
+.passport-skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.passport-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.passport-timeline__item {
+  display: flex;
+  gap: 14px;
+  padding: 10px 0;
+  position: relative;
+}
+
+.passport-timeline__item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 38px;
+  bottom: -4px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.passport-timeline__dot {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111422;
+  border: 1px solid var(--border-dim);
+  color: var(--text-dim);
+}
+
+.passport-timeline__dot.tone-purple { color: var(--neon-purple); border-color: rgba(168, 85, 247, 0.35); }
+.passport-timeline__dot.tone-cyan    { color: var(--neon-cyan); border-color: rgba(59, 130, 246, 0.35); }
+.passport-timeline__dot.tone-green   { color: var(--neon-green); border-color: rgba(16, 185, 129, 0.35); }
+.passport-timeline__dot.tone-yellow  { color: var(--neon-yellow); border-color: rgba(245, 158, 11, 0.35); }
+.passport-timeline__dot.tone-blue    { color: #60a5fa; border-color: rgba(96, 165, 250, 0.35); }
+.passport-timeline__dot.tone-dim     { color: var(--text-dim); border-color: var(--border-dim); }
+
+.passport-timeline__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.passport-timeline__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.passport-timeline__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+}
+
+.passport-timeline__time {
+  font-size: 10.5px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.passport-timeline__desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 3px;
+}
+
+/* Plan + progress inside stats */
+.mini-stat-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mini-stat-vertical .atlas-progress {
+  width: 100%;
+}
+
+/* Declared stack note */
+.stack-note {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+/* Active engineering session */
+.session-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.session-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.session-row .label {
+  color: var(--text-dim);
+  letter-spacing: 0.6px;
+}
+
+.session-row .value {
+  color: var(--text-secondary);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Goals */
+.goal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.goal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12.5px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.goal-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.goal-row__name {
+  color: var(--text-secondary);
+}
+
+.goal-row__value {
+  color: #fff;
+  font-weight: 700;
+}
+
+.goal-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 2px 0;
+}

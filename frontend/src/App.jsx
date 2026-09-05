@@ -445,6 +445,8 @@ function App() {
         {activeTab === 'passport' && (
           <Passport 
             user={user} 
+            profile={profile}
+            accessToken={accessToken}
             missionCompleted={missionCompleted} 
           />
         )}
