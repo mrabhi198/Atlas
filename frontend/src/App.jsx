@@ -454,7 +454,13 @@ function App() {
         {activeTab === 'career' && (
           <CareerVault 
             user={user} 
-            missionCompleted={missionCompleted} 
+            profile={profile}
+            accessToken={accessToken}
+            missionCompleted={missionCompleted}
+            onNavigateToLearn={() => setActiveTab('learn')}
+            onNavigateToIDE={() => setActiveTab('ide')}
+            onNavigateToPassport={() => setActiveTab('passport')}
+            onNavigateToSettings={() => setActiveTab('settings')}
           />
         )}
 
