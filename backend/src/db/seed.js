@@ -9,7 +9,7 @@ export async function seedDatabase(db) {
   if (count.count !== 0) return;
 
   const seedUsers = [
-    { id: 'usr_1', email: 'abhi@atlas.dev', username: 'abhi', password: 'StudentPass2400!', role: 'jr architect', passcode: '2400', name: 'Abhi', track: 'Backend Architect', xp: 2800, level: 3, code_quality: 94 },
+    { id: 'usr_1', email: 'abhi@atlas.dev', username: 'abhi', password: 'StudentPass2400!', role: 'jr architect', passcode: '2400', name: 'Abhi', track: 'Backend Architect', xp: 2800, level: 3, code_quality: 72 },
     { id: 'usr_2', email: 'sarah@atlas.dev', username: 'sarah', password: 'MentorPass5200!', role: 'mentor', passcode: '5200', name: 'Sarah', track: 'Frontend Engineer', xp: 5200, level: 6, code_quality: 98 },
     { id: 'usr_3', email: 'vikram@atlas.dev', username: 'vikram', password: 'GuiderPass3200!', role: 'guider', passcode: '3200', name: 'Vikram', track: 'Android Developer', xp: 1200, level: 2, code_quality: 85 },
     { id: 'usr_4', email: 'elena@atlas.dev', username: 'elena', password: 'AdminPass6400!', role: 'admin', passcode: '6400', name: 'Elena', track: 'AI/ML Engineer', xp: 9500, level: 10, code_quality: 99 },
@@ -67,7 +67,7 @@ export async function seedDatabase(db) {
     // Seed Default Notifications
     const notifs = [
       { id: `notif_${u.id}_1`, title: 'Welcome to Atlas Core', msg: 'Your developer signature has been mapped to our cognitive learning network.', cat: 'system' },
-      { id: `notif_${u.id}_2`, title: 'High-Efficiency Target Achieved', msg: 'Your Kotlin search benchmarks scored under 2ms. +800 XP.', cat: 'achievement' },
+      { id: `notif_${u.id}_2`, title: 'First Mission Awaits', msg: 'Run the Instagram Followers Search mission in the Mission Studio to unlock advanced benchmarks.', cat: 'achievement' },
       { id: `notif_${u.id}_3`, title: 'AI Recommendation Queue', msg: 'Cognitive Guide has recommended studying Trie prefix tree indexing.', cat: 'mentor' }
     ];
     for (const n of notifs) {
@@ -113,7 +113,7 @@ export async function seedDatabase(db) {
       { type: 'onboard', desc: 'Registered Developer Profile on System Registry' },
       { type: 'chat', desc: 'Consulted AI Mentor regarding Trie prefix indexing structures' },
       { type: 'ide_fail', desc: 'Executed follower search benchmark. O(N) constraint failed' },
-      { type: 'ide_pass', desc: 'Optimized search loop via prefix Trie indexing. Latency verified at 1.4ms' }
+      { type: 'ide_pass', desc: 'Refined follower search loop with Trie index. Awaiting benchmark verification in Mission Studio.' }
     ];
     for (let i = 0; i < activities.length; i++) {
       const act = activities[i];
@@ -174,27 +174,27 @@ export async function seedDatabase(db) {
       topic_id: 'top_and_1',
       title: 'Understanding Row & Column composables',
       order: 1,
-      time: '10m',
-      xp: 200,
-      prereqs: ''
+      estimated_time: '10m',
+      xp_reward: 200,
+      prerequisites: ''
     },
     {
       id: 'less_back_1',
       topic_id: 'top_back_1',
       title: 'Kotlin Variables & Null Safety Guidelines',
       order: 1,
-      time: '12m',
-      xp: 250,
-      prereqs: ''
+      estimated_time: '12m',
+      xp_reward: 250,
+      prerequisites: ''
     },
     {
       id: 'less_back_2',
       topic_id: 'top_back_1',
       title: 'Prefix Trie Tree Index Memory Layout',
       order: 2,
-      time: '15m',
-      xp: 300,
-      prereqs: 'less_back_1'
+      estimated_time: '15m',
+      xp_reward: 300,
+      prerequisites: 'less_back_1'
     }
   ];
 

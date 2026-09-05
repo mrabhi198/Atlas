@@ -272,7 +272,7 @@ export default function MissionIDE({ user, accessToken, missionCompleted, onComp
 
   const banner = runStatus === 'success' ? (
     <Alert variant="success">
-      <strong>Mission verified.</strong> All benchmark assertions passed and your Passport has been updated.
+      <strong>Simulation passed.</strong> All benchmark assertions matched the reference solution. Mission scoring is simulated (prototype) — no XP or Passport changes are applied.
     </Alert>
   ) : runStatus === 'failed' ? (
     <Alert variant="warning">

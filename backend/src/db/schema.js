@@ -96,9 +96,60 @@ export async function createSchema(db) {
     CREATE TABLE IF NOT EXISTS refresh_tokens (
       token TEXT PRIMARY KEY,
       user_id TEXT NOT NULL,
+      session_id TEXT,
       expires_at TEXT NOT NULL,
       revoked INTEGER DEFAULT 0,
       created_at TEXT,
+      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Mission Attempts Table — real submission history. Each RUN writes one row;
+  // no XP/level/metrics are fabricated from this (latency/memory may stay NULL
+  // until a real sandbox executes the code).
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS mission_attempts (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      mission_id TEXT NOT NULL,
+      status TEXT NOT NULL,
+      source_code TEXT,
+      latency REAL,
+      memory REAL,
+      created_at TEXT,
+      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Quiz Results Table — server-scored submissions with one-time XP awarded
+  // only on the first passing score per user+lesson.
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS quiz_results (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      lesson_id TEXT NOT NULL,
+      score_percent INTEGER NOT NULL,
+      passed INTEGER NOT NULL DEFAULT 0,
+      correct_count INTEGER DEFAULT 0,
+      total_questions INTEGER DEFAULT 0,
+      answers_json TEXT,
+      created_at TEXT,
+      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Flashcard Progress Table — SM-2-lite spaced repetition schedule.
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS flashcard_progress (
+      user_id TEXT NOT NULL,
+      card_id TEXT NOT NULL,
+      reps INTEGER DEFAULT 0,
+      interval_days INTEGER DEFAULT 1,
+      ease_factor REAL DEFAULT 2.5,
+      last_reviewed_at TEXT,
+      next_review_at TEXT,
+      PRIMARY KEY(user_id, card_id),
       FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
     )
   `);
@@ -368,5 +419,19 @@ export async function createSchema(db) {
       FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY(lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
     )
+  `);
+
+  // Query-path indexes for the hot read endpoints (dashboard timeline, calendar,
+  // lesson progress, sessions, refresh tokens). Placed last so every referenced
+  // table already exists.
+  await db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_activity_logs_user_time ON activity_logs(user_id, timestamp);
+    CREATE INDEX IF NOT EXISTS idx_notifications_user_time ON notifications(user_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_calendar_user_date ON calendar_events(user_id, event_date);
+    CREATE INDEX IF NOT EXISTS idx_progress_user_status ON lesson_progress(user_id, status);
+    CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_refresh_user ON refresh_tokens(user_id, session_id);
+    CREATE INDEX IF NOT EXISTS idx_learning_sessions_user_last ON learning_sessions(user_id, last_active);
+    CREATE INDEX IF NOT EXISTS idx_mission_attempts_user ON mission_attempts(user_id, created_at);
   `);
 }

@@ -8,7 +8,10 @@ import { getDb } from '../db/index.js';
 export function signTokens(userRow) {
   const payload = { id: userRow.id, email: userRow.email, username: userRow.username, role: userRow.role };
   const accessToken = jwt.sign(payload, config.accessTokenSecret, { expiresIn: '15m' });
-  const refreshToken = jwt.sign({ id: userRow.id }, config.refreshTokenSecret, { expiresIn: '7d' });
+  // Unique per issuance: iat has second granularity, so a { id }-only payload
+  // could collide when a user logs in twice within the same second (token is a
+  // UNIQUE column). jti makes every issuance distinct and avoids token replay.
+  const refreshToken = jwt.sign({ id: userRow.id, jti: uuidv4() }, config.refreshTokenSecret, { expiresIn: '7d' });
   return { accessToken, refreshToken };
 }
 
@@ -18,18 +21,19 @@ export async function persistAuthSession(userRow, ip, userAgent, accessToken, re
   const timestamp = new Date().toISOString();
   const expiresAt = new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
 
-  // Store Refresh Token
-  await db.run(
-    'INSERT INTO refresh_tokens (token, user_id, expires_at, revoked, created_at) VALUES (?, ?, ?, 0, ?)',
-    [refreshToken, userRow.id, expiresAt, timestamp]
-  );
-
-  // Create Active Session
+  // Create Active Session first so the refresh token can be linked to it.
   const sessionId = 'sess_' + uuidv4().substr(0, 8);
   const userAgentLabel = userAgent || 'Unspecified browser';
   await db.run(
     'INSERT INTO sessions (id, user_id, ip_address, user_agent, last_active, created_at) VALUES (?, ?, ?, ?, ?, ?)',
     [sessionId, userRow.id, ip, userAgentLabel, timestamp, timestamp]
+  );
+
+  // Store Refresh Token, bound to the session. Revoking the session therefore
+  // revokes the token too (see DELETE /auth/sessions/:id).
+  await db.run(
+    'INSERT INTO refresh_tokens (token, user_id, session_id, expires_at, revoked, created_at) VALUES (?, ?, ?, ?, 0, ?)',
+    [refreshToken, userRow.id, sessionId, expiresAt, timestamp]
   );
 
   return { sessionId };
@@ -92,15 +96,15 @@ export async function processOAuthLogin(profile, provider, ip, userAgent) {
   const { accessToken, refreshToken } = signTokens(userRow);
   const expiresAt = new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
 
-  await db.run(
-    'INSERT INTO refresh_tokens (token, user_id, expires_at, revoked, created_at) VALUES (?, ?, ?, 0, ?)',
-    [refreshToken, userRow.id, expiresAt, timestamp]
-  );
-
   const sessionId = 'sess_' + uuidv4().substr(0, 8);
   await db.run(
     'INSERT INTO sessions (id, user_id, ip_address, user_agent, last_active, created_at) VALUES (?, ?, ?, ?, ?, ?)',
     [sessionId, userRow.id, ip, userAgent, timestamp, timestamp]
+  );
+
+  await db.run(
+    'INSERT INTO refresh_tokens (token, user_id, session_id, expires_at, revoked, created_at) VALUES (?, ?, ?, ?, 0, ?)',
+    [refreshToken, userRow.id, sessionId, expiresAt, timestamp]
   );
 
   return { accessToken, refreshToken, sessionId };

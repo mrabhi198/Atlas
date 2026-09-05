@@ -19,19 +19,31 @@ router.get('/', authenticateToken, authorizeRoles('admin', 'super admin', 'mento
 // 2. Add Security Tag (Super Admin / Admin only)
 router.post('/', authenticateToken, authorizeRoles('admin', 'super admin'), async (req, res) => {
   const { name } = req.body;
-  if (!name || name.trim().length === 0) return res.status(400).json({ error: 'Tag name required' });
+  if (!name || typeof name !== 'string' || name.trim().length === 0) {
+    return res.status(400).json({ error: 'Tag name required' });
+  }
+  if (name.length > 60) {
+    return res.status(400).json({ error: 'Tag name must be 60 characters or fewer.' });
+  }
 
   try {
     const db = getDb();
+    const tagName = name.trim();
+    const existing = await db.get('SELECT id FROM security_tags WHERE LOWER(name) = LOWER(?)', [tagName]);
+    if (existing) {
+      return res.status(409).json({ error: 'A tag with this name already exists.' });
+    }
+
     const id = 'tag_' + Date.now() + Math.random().toString(36).substr(2, 9);
     await db.run('INSERT INTO security_tags (id, name, created_at) VALUES (?, ?, ?)', [
-      id, name.trim(), new Date().toISOString()
+      id, tagName, new Date().toISOString()
     ]);
     const tag = await db.get('SELECT * FROM security_tags WHERE id = ?', [id]);
-    await writeAuditLog(req.user.id, `CREATED_TAG_${name.toUpperCase()}`, req);
+    await writeAuditLog(req.user.id, `CREATED_TAG_${tagName.toUpperCase()}`, req);
     res.json(tag);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create tag. It might already exist.' });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to create tag.' });
   }
 });
 

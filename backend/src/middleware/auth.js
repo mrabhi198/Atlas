@@ -12,7 +12,7 @@ export function authenticateToken(req, res, next) {
 
   jwt.verify(token, config.accessTokenSecret, (err, user) => {
     if (err) {
-      return res.status(403).json({ error: 'Invalid or expired access token.' });
+      return res.status(401).json({ error: 'Invalid or expired access token. Please re-authenticate.' });
     }
     req.user = user; // { id, email, username, role }
     next();

@@ -23,6 +23,7 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
   // Quiz State
   const [quizAnswers, setQuizAnswers] = useState({});
   const [quizResults, setQuizResults] = useState(null);
+  const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
     loadLesson();
@@ -91,6 +92,7 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
   };
 
   const handleCompleteLesson = async () => {
+    setActionError(null);
     try {
       const res = await apiFetch(`/lessons/${lessonId}/progress`, {
         method: 'POST',
@@ -99,13 +101,18 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
       });
       if (res.ok) {
         loadLesson();
+      } else {
+        const json = await res.json().catch(() => ({}));
+        setActionError(json.error || 'Failed to complete lesson. Please try again.');
       }
     } catch (err) {
       console.error(err);
+      setActionError('Connection lost. Failed to update lesson progress.');
     }
   };
 
   const handleSubmitQuiz = async () => {
+    setActionError(null);
     try {
       const res = await apiFetch('/quiz/submit', {
         method: 'POST',
@@ -121,9 +128,13 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
       if (res.ok) {
         const json = await res.json();
         setQuizResults(json);
+      } else {
+        const json = await res.json().catch(() => ({}));
+        setActionError(json.error || 'Failed to submit quiz. Please try again.');
       }
     } catch (err) {
       console.error(err);
+      setActionError('Connection lost. Failed to submit quiz.');
     }
   };
 
@@ -182,6 +193,13 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
             {isCompleted ? 'COMPLETED' : 'MARK COMPLETE'}
           </button>
         </div>
+
+        {actionError && (
+          <div className="font-mono" style={{ marginTop: '10px', fontSize: '12px', color: 'var(--neon-red)' }}>
+            <AlertCircle size={13} style={{ verticalAlign: '-2px', marginRight: '6px' }} />
+            {actionError}
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '40px' }}>
@@ -210,7 +228,7 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
                   <p className="font-sans" style={{ color: '#fff', marginBottom: '14px', fontWeight: 'bold' }}>{qIdx + 1}. {q.question}</p>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {q.options.map((opt, oIdx) => {
+                    {(q.options || []).map((opt, oIdx) => {
                       const isSelected = quizAnswers[qIdx] === oIdx;
                       let optionStyle = { 
                         padding: '12px', 

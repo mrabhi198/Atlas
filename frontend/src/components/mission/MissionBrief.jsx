@@ -40,8 +40,8 @@ export default function MissionBrief() {
       <div className="mission-brief__section mission-brief__hint">
         <Info size={13} className="neon-cyan" aria-hidden="true" />
         <p className="mission-brief__text">
-          Press <strong>Run</strong> to execute the benchmark suite against the current file. A passing run
-          verifies the mission and updates your Passport.
+          Press <strong>Run</strong> to execute the benchmark suite against the current file. Passing runs are
+          recorded as mission attempts; scoring is simulated and does not alter XP or your Passport.
         </p>
       </div>
     </div>
