@@ -15,7 +15,7 @@ import {
   Target
 } from 'lucide-react';
 import { apiFetch } from '../../api/client';
-import { Button, StatePanel, Skeleton } from '../../components/shared';
+import { Button, StatePanel, Skeleton, ProgressBar } from '../../components/shared';
 
 const TRACK_LABELS = {
   android: 'Android Development',
@@ -43,27 +43,6 @@ const PLAN_TYPE_LABELS = {
   mission: 'Mission',
   reflection: 'Reflection'
 };
-
-function ProgressBar({ value, label, color = 'var(--neon-cyan)', thickness = '8px' }) {
-  const clamped = Math.max(0, Math.min(100, Math.round(value || 0)));
-  return (
-    <div
-      className="atlas-progress"
-      style={{ height: thickness }}
-      role="progressbar"
-      aria-label={label || 'Progress'}
-      aria-valuenow={clamped}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuetext={`${clamped}% ${label || 'complete'}`}
-    >
-      <div
-        className="atlas-progress__fill"
-        style={{ width: `${clamped}%`, background: color, boxShadow: `0 0 8px ${color}` }}
-      />
-    </div>
-  );
-}
 
 function formatSeconds(seconds) {
   const mins = Math.round((seconds || 0) / 60);

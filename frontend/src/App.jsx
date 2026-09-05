@@ -416,7 +416,6 @@ function App() {
 
         {activeTab === 'learn' && !activeLessonId && (
           <LearnHub 
-            user={user}
             accessToken={accessToken}
             onNavigateToLesson={(lessonId) => setActiveLessonId(lessonId)}
           />

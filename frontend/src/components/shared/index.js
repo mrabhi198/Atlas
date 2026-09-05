@@ -5,6 +5,7 @@ export { default as Alert } from './Alert';
 export { default as Spinner } from './Spinner';
 export { default as Skeleton } from './Skeleton';
 export { default as StatePanel } from './StatePanel';
+export { default as ProgressBar } from './ProgressBar';
 export { default as Modal } from './Modal';
 export { ToastProvider, useToast } from './Toast';
 export { default as ErrorBoundary } from './ErrorBoundary';
