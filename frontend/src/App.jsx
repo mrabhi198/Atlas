@@ -403,11 +403,14 @@ function App() {
       {/* Primary Workspaces Content */}
       <main className="content-wrapper">
         {activeTab === 'overview' && (
-          <Dashboard 
-            user={user} 
+          <Dashboard
             accessToken={accessToken}
-            missionCompleted={missionCompleted} 
-            onNavigateToIDE={() => setActiveTab('ide')} 
+            missionCompleted={missionCompleted}
+            onNavigateToIDE={() => setActiveTab('ide')}
+            onNavigateToPractice={() => setActiveTab('practice')}
+            onNavigateToPassport={() => setActiveTab('passport')}
+            onNavigateToCareer={() => setActiveTab('career')}
+            onNavigateToSettings={() => setActiveTab('settings')}
           />
         )}
 
