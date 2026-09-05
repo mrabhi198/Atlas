@@ -1,0 +1,12 @@
+{
+  "services": [
+    {
+      "name": "Example Service",
+      "url": "https://your-service.onrender.com"
+    },
+    {
+      "name": "Example API",
+      "url": "https://your-api.onrender.com"
+    }
+  ]
+}

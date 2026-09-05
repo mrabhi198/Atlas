@@ -1,0 +1,28 @@
+name: Render Health Check
+
+# Runs on a schedule AND on demand (workflow_dispatch → "Run workflow" button)
+# for manual testing. The job only reaches out to the URLs listed in
+# health-checker/config/urls.json — it never exposes an endpoint.
+on:
+  schedule:
+    # Every 15 minutes, UTC. GitHub does not guarantee exact second-level
+    # execution; runs can be delayed during high load.
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Zero-dependency checker (Node built-in fetch) — no npm install needed.
+      - name: Run health checker
+        run: node health-checker/scripts/health-check.js

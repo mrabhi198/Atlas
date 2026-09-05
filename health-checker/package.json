@@ -1,0 +1,10 @@
+{
+  "name": "atlas-health-checker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "GitHub Actions-based availability checker for Atlas Render web services (zero runtime dependencies).",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
