@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Key, Mail, Lock, User, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import { apiFetch } from '../../api/client';
+import { Button, Field, Alert, PasswordStrength } from '../../components/shared';
 
 export default function Register({ onNavigateToLogin }) {
   const [email, setEmail] = useState('');
@@ -31,10 +32,15 @@ export default function Register({ onNavigateToLogin }) {
       setUsernameAvailable(null);
       return;
     }
+
+    const trimmed = username.trim();
     setUsernameChecking(true);
+    let cancelled = false;
+
     const delayDebounce = setTimeout(async () => {
       try {
-        const res = await apiFetch(`/auth/check-username/${username.trim()}`);
+        const res = await apiFetch(`/auth/check-username/${trimmed}`);
+        if (cancelled) return;
         if (res.ok) {
           const data = await res.json();
           setUsernameAvailable(data.available);
@@ -42,10 +48,14 @@ export default function Register({ onNavigateToLogin }) {
       } catch (err) {
         console.error(err);
       } finally {
-        setUsernameChecking(false);
+        if (!cancelled) setUsernameChecking(false);
       }
-    }, 4500); // 450ms debounce
-    return () => clearTimeout(delayDebounce);
+    }, 450); // 450ms debounce
+
+    return () => {
+      cancelled = true;
+      clearTimeout(delayDebounce);
+    };
   }, [username]);
 
   // Real-time password strength check
@@ -129,15 +139,6 @@ export default function Register({ onNavigateToLogin }) {
     }
   };
 
-  const getStrengthLabel = () => {
-    if (strengthScore === 0) return { text: 'EMPTY', color: 'var(--text-dim)' };
-    if (strengthScore <= 2) return { text: 'WEAK / COMPROMISED', color: 'var(--neon-red)' };
-    if (strengthScore <= 4) return { text: 'MEDIUM COMPLEXITY', color: 'var(--neon-yellow)' };
-    return { text: 'SECURE / STRONG', color: 'var(--neon-lime)' };
-  };
-
-  const labelMeta = getStrengthLabel();
-
   return (
     <div className="onboarding-panel glass-panel fade-in" style={{ maxWidth: '520px' }}>
       <div className="onboarding-header">
@@ -147,164 +148,133 @@ export default function Register({ onNavigateToLogin }) {
       </div>
 
       {errorMsg && (
-        <div className="admin-alert error font-mono" style={{ fontSize: '11px', marginBottom: '16px' }}>
+        <Alert variant="danger" className="font-mono" style={{ fontSize: '11px', marginBottom: '16px' }}>
           {errorMsg}
-        </div>
+        </Alert>
       )}
 
       {successMsg ? (
         <div className="text-center" style={{ padding: '20px 0' }}>
-          <div className="admin-alert success font-mono" style={{ fontSize: '12px', marginBottom: '24px', lineHeight: '1.6' }}>
+          <Alert variant="success" className="font-mono" style={{ fontSize: '12px', marginBottom: '24px', lineHeight: '1.6' }}>
             🎉 {successMsg}
-          </div>
-          <button onClick={onNavigateToLogin} className="neon-btn accent font-sans w-full">
+          </Alert>
+          <Button onClick={onNavigateToLogin} variant="accent" block className="font-sans">
             Proceed to Login
-          </button>
+          </Button>
         </div>
       ) : (
         <form onSubmit={handleRegisterSubmit} className="credentials-form" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-            
-            <div className="form-group" style={{ textAlign: 'left' }}>
-              <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>FULL NAME</label>
-              <input
-                type="text"
-                required
-                placeholder="John Doe"
-                value={fullName}
-                onChange={e => setFullName(e.target.value)}
-                className="tech-input font-mono"
-                style={{ background: '#020204', textTransform: 'none' }}
-              />
-            </div>
+          <div className="atlas-two-col">
+            <Field
+              label="FULL NAME"
+              required
+              className="font-mono"
+              type="text"
+              placeholder="John Doe"
+              value={fullName}
+              onChange={e => setFullName(e.target.value)}
+              autoComplete="name"
+              style={{ background: '#020204' }}
+            />
 
-            <div className="form-group" style={{ textAlign: 'left' }}>
-              <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>EMAIL ADDRESS</label>
-              <input
-                type="email"
-                required
-                placeholder="dev@domain.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="tech-input font-mono"
-                style={{ background: '#020204', textTransform: 'none' }}
-              />
-            </div>
+            <Field
+              label="EMAIL ADDRESS"
+              required
+              className="font-mono"
+              type="email"
+              placeholder="dev@domain.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              autoComplete="email"
+              style={{ background: '#020204' }}
+            />
 
-            <div className="form-group" style={{ textAlign: 'left', gridColumn: 'span 2' }}>
-              <label className="font-mono" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)' }}>
-                <span>USERNAME</span>
-                {usernameChecking && <span style={{ color: 'var(--neon-cyan)' }}>CHECKING REGISTRY...</span>}
-                {!usernameChecking && usernameAvailable === true && <span style={{ color: 'var(--neon-lime)' }}>✓ NODE AVAILABLE</span>}
-                {!usernameChecking && usernameAvailable === false && <span style={{ color: 'var(--neon-red)' }}>✗ NODE CLAIMED</span>}
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Pick alphanumeric handle"
-                value={username}
-                onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                className="tech-input font-mono"
-                style={{ background: '#020204', textTransform: 'none' }}
-                maxLength={15}
-              />
-            </div>
+            <Field
+              label={
+                <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                  <span>USERNAME</span>
+                  {usernameChecking && <span style={{ color: 'var(--neon-cyan)' }}>CHECKING REGISTRY...</span>}
+                  {!usernameChecking && usernameAvailable === true && <span style={{ color: 'var(--neon-lime)' }}>✓ NODE AVAILABLE</span>}
+                  {!usernameChecking && usernameAvailable === false && <span style={{ color: 'var(--neon-red)' }}>✗ NODE CLAIMED</span>}
+                </span>
+              }
+              required
+              className="font-mono span-2"
+              type="text"
+              placeholder="Pick alphanumeric handle"
+              value={username}
+              onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+              style={{ background: '#020204' }}
+              maxLength={15}
+              autoComplete="username"
+            />
 
-            <div className="form-group" style={{ textAlign: 'left' }}>
-              <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>PASSWORD</label>
-              <input
-                type="password"
-                required
-                placeholder="Min 10 characters"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="tech-input font-mono"
-                style={{ background: '#020204', textTransform: 'none' }}
-              />
-            </div>
+            <Field
+              label="PASSWORD"
+              required
+              className="font-mono"
+              type="password"
+              placeholder="Min 10 characters"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              autoComplete="new-password"
+              style={{ background: '#020204' }}
+            />
 
-            <div className="form-group" style={{ textAlign: 'left' }}>
-              <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>CONFIRM PASSWORD</label>
-              <input
-                type="password"
-                required
-                placeholder="Repeat password"
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                className="tech-input font-mono"
-                style={{ background: '#020204', textTransform: 'none' }}
-              />
-            </div>
+            <Field
+              label="CONFIRM PASSWORD"
+              required
+              className="font-mono"
+              type="password"
+              placeholder="Repeat password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
+              style={{ background: '#020204' }}
+            />
           </div>
 
           {/* Password Strength Meter */}
-          <div style={{ textAlign: 'left', background: '#080a12', padding: '10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.03)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', marginBottom: '6px' }} className="font-mono">
-              <span>SECURITY RATING:</span>
-              <span style={{ color: labelMeta.color }}>{labelMeta.text}</span>
-            </div>
-            
-            <div style={{ display: 'flex', gap: '4px', height: '4px', marginBottom: '10px' }}>
-              {[1, 2, 3, 4, 5].map(stepIndex => (
-                <div 
-                  key={stepIndex} 
-                  style={{ 
-                    flex: 1, 
-                    borderRadius: '2px',
-                    background: stepIndex <= strengthScore ? labelMeta.color : 'rgba(255,255,255,0.05)',
-                    transition: 'background 0.3s'
-                  }} 
-                />
-              ))}
-            </div>
+          <PasswordStrength score={strengthScore} criteria={passwordCriteria} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', fontSize: '9px', color: 'var(--text-dim)' }} className="font-mono">
-              <span style={{ color: passwordCriteria.length ? 'var(--neon-lime)' : '' }}>• 10+ Characters</span>
-              <span style={{ color: passwordCriteria.upper ? 'var(--neon-lime)' : '' }}>• Uppercase Letter</span>
-              <span style={{ color: passwordCriteria.lower ? 'var(--neon-lime)' : '' }}>• Lowercase Letter</span>
-              <span style={{ color: passwordCriteria.number ? 'var(--neon-lime)' : '' }}>• Numeric Digit</span>
-              <span style={{ color: passwordCriteria.special ? 'var(--neon-lime)' : '' }}>• Special Symbol (@$!%*?&)</span>
-            </div>
+          <div className="atlas-two-col">
+            <Field
+              label="CAREER GOAL"
+              className="font-mono"
+              type="text"
+              placeholder="e.g. Platform Engineer"
+              value={careerGoal}
+              onChange={e => setCareerGoal(e.target.value)}
+              style={{ background: '#020204' }}
+            />
+
+            <Field
+              label="LEARNING PATH"
+              as="select"
+              className="font-mono"
+              value={learningTrack}
+              onChange={e => setLearningTrack(e.target.value)}
+              style={{ background: '#020204', padding: '12px' }}
+            >
+              <option value="backend">Backend Architect</option>
+              <option value="android">Android Developer</option>
+              <option value="web">Frontend Engineer</option>
+              <option value="devops">DevOps Specialist</option>
+              <option value="aiml">AI/ML Engineer</option>
+            </Field>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-            <div className="form-group" style={{ textAlign: 'left' }}>
-              <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>CAREER GOAL</label>
-              <input
-                type="text"
-                placeholder="e.g. Platform Engineer"
-                value={careerGoal}
-                onChange={e => setCareerGoal(e.target.value)}
-                className="tech-input font-mono"
-                style={{ background: '#020204', textTransform: 'none' }}
-              />
-            </div>
-
-            <div className="form-group" style={{ textAlign: 'left' }}>
-              <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>LEARNING PATH</label>
-              <select
-                value={learningTrack}
-                onChange={e => setLearningTrack(e.target.value)}
-                className="tech-select font-mono"
-                style={{ background: '#020204', padding: '12px' }}
-              >
-                <option value="backend">Backend Architect</option>
-                <option value="android">Android Developer</option>
-                <option value="web">Frontend Engineer</option>
-                <option value="devops">DevOps Specialist</option>
-                <option value="aiml">AI/ML Engineer</option>
-              </select>
-            </div>
-          </div>
-
-          <button 
-            type="submit" 
-            disabled={isLoading || usernameAvailable === false}
-            className="neon-btn accent font-sans w-full"
+          <Button
+            type="submit"
+            variant="accent"
+            block
+            disabled={usernameAvailable === false}
+            loading={isLoading}
+            className="font-sans"
             style={{ padding: '12px', height: 'auto', textShadow: 'none', marginTop: '6px' }}
           >
             {isLoading ? 'ENROLLING NODE...' : 'INITIALIZE ACCOUNT bluePRINT'}
-          </button>
+          </Button>
 
           <button 
             type="button" 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { apiFetch } from '../../api/client';
+import { Button, Field, Alert } from '../../components/shared';
 
 export default function VerifyEmail({ onNavigateToLogin }) {
   const [status, setStatus] = useState('verifying'); // verifying, success, error
@@ -95,50 +96,51 @@ export default function VerifyEmail({ onNavigateToLogin }) {
       {status === 'success' && (
         <div style={{ padding: '20px 0' }}>
           <CheckCircle className="neon-lime" size={48} style={{ margin: '0 auto 16px' }} />
-          <div className="admin-alert success font-mono" style={{ fontSize: '11px', marginBottom: '24px', lineHeight: '1.5' }}>
+          <Alert variant="success" className="font-mono" style={{ fontSize: '11px', marginBottom: '24px', lineHeight: '1.5' }}>
             ✓ AUTHENTICATION INTEGRITY CONFIRMED. Your developer credentials are now active on the system registry.
-          </div>
-          <button onClick={onNavigateToLogin} className="neon-btn accent font-sans w-full">
+          </Alert>
+          <Button onClick={onNavigateToLogin} variant="accent" block className="font-sans">
             Proceed to Sign In
-          </button>
+          </Button>
         </div>
       )}
 
       {status === 'error' && (
         <div style={{ padding: '10px 0' }}>
           <XCircle className="neon-red" size={48} style={{ margin: '0 auto 16px' }} />
-          <div className="admin-alert error font-mono" style={{ fontSize: '11px', marginBottom: '24px', wordBreak: 'break-all' }}>
+          <Alert variant="danger" className="font-mono" style={{ fontSize: '11px', marginBottom: '24px', wordBreak: 'break-all' }}>
             ✗ SIGNATURE REJECTED: {errorMsg}
-          </div>
+          </Alert>
 
           <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.05)', margin: '20px 0' }} />
 
           <form onSubmit={handleResend} className="credentials-form" style={{ textAlign: 'left' }}>
-            <div className="form-group" style={{ marginBottom: '14px' }}>
-              <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>RESEND VERIFICATION LINK</label>
-              <input
-                type="email"
-                required
-                placeholder="Enter registered email"
-                value={resendEmail}
-                onChange={e => setResendEmail(e.target.value)}
-                className="tech-input font-mono"
-                style={{ background: '#020204', textTransform: 'none' }}
-              />
-            </div>
+            <Field
+              label="RESEND VERIFICATION LINK"
+              required
+              className="font-mono"
+              type="email"
+              placeholder="Enter registered email"
+              value={resendEmail}
+              onChange={e => setResendEmail(e.target.value)}
+              autoComplete="email"
+              style={{ background: '#020204', marginBottom: '14px' }}
+            />
             {resendSuccess && (
-              <div className="admin-alert success font-mono" style={{ fontSize: '10px', marginBottom: '12px' }}>
+              <Alert variant="success" className="font-mono" style={{ fontSize: '10px', marginBottom: '12px' }}>
                 {resendSuccess}
-              </div>
+              </Alert>
             )}
-            <button 
-              type="submit" 
-              disabled={resendLoading}
-              className="neon-btn secondary font-sans w-full"
+            <Button
+              type="submit"
+              variant="secondary"
+              block
+              loading={resendLoading}
+              className="font-sans"
               style={{ padding: '10px', height: 'auto', textShadow: 'none' }}
             >
               {resendLoading ? 'DISPATCHING LINK...' : 'DISPATCH NEW LINK'}
-            </button>
+            </Button>
           </form>
 
           <button 

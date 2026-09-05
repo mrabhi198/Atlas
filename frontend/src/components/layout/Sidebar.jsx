@@ -19,15 +19,16 @@ export default function Sidebar({ activeTab, onNavigate, user, profile, onAdmin,
         <span className="logo-text">ATLAS</span>
       </div>
 
-      <nav className="nav-links">
+      <nav className="nav-links" aria-label="Main navigation">
         {NAV_ITEMS.map(({ tab, label, icon: Icon }) => (
           <button
             key={tab}
             className={`nav-item ${activeTab === tab ? 'active' : ''}`}
             onClick={() => onNavigate(tab)}
+            aria-current={activeTab === tab ? 'page' : undefined}
             style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
           >
-            <Icon size={18} />
+            <Icon size={18} aria-hidden="true" />
             <span>{label}</span>
           </button>
         ))}

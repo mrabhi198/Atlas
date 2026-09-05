@@ -24,9 +24,11 @@ import {
   Info
 } from 'lucide-react';
 import { apiFetch } from '../../api/client';
+import { Button, StatePanel } from '../../components/shared';
 
 export default function Dashboard({ user, accessToken, missionCompleted, onNavigateToIDE }) {
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [data, setData] = useState(null);
   const [plan, setPlan] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -53,6 +55,7 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
       const res = await apiFetch('/dashboard/summary', { token: accessToken });
       if (res.ok) {
         const json = await res.json();
+        setLoadError(null);
         setData(json);
         setPlan(json.todayPlan || []);
         setGoals(json.dailyGoals.concat(json.weeklyGoals) || []);
@@ -62,9 +65,12 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
         setCalendar(json.calendarEvents || []);
         setPinned(json.pinnedActions || []);
         setAnalytics(json.analytics || null);
+      } else {
+        setLoadError('Failed to synchronize dashboard workspace.');
       }
     } catch (err) {
       console.error('Failed to load dashboard:', err);
+      setLoadError('Failed to synchronize dashboard workspace.');
     } finally {
       setLoading(false);
     }
@@ -184,11 +190,36 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
 
   if (loading || !data) {
     return (
-      <div className="onboarding-root">
-        <div className="onboarding-panel glass-panel text-center">
-          <RefreshCw className="spin neon-cyan" size={32} style={{ margin: '0 auto 16px' }} />
-          <p className="font-mono text-sm">Synchronizing dashboard workspace configs...</p>
-        </div>
+      <div className="glass-panel">
+        <StatePanel
+          variant="loading"
+          title="Synchronizing Workspace"
+          message="Binding dashboard telemetry streams..."
+        />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="glass-panel">
+        <StatePanel
+          variant="error"
+          title="Dashboard Sync Failure"
+          message={loadError}
+          action={
+            <Button
+              className="font-mono"
+              onClick={() => {
+                setLoadError(null);
+                setLoading(true);
+                loadDashboardData();
+              }}
+            >
+              <RefreshCw size={14} /> RETRY SYNC
+            </Button>
+          }
+        />
       </div>
     );
   }
@@ -363,13 +394,13 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
       )}
 
       {/* 3. Main Dashboard Layout Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+      <div className="dashboard-grid">
         
         {/* LEFT COLUMN: Cockpit Details */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Stats Bar */}
-          <div className="glass-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', padding: '20px', textAlign: 'center' }}>
+          <div className="glass-panel stats-grid" style={{ padding: '20px', textAlign: 'center' }}>
             <div>
               <span className="font-mono" style={{ fontSize: '9px', color: 'var(--text-dim)' }}>ENGINEERING LEVEL</span>
               <h2 className="text-glow-purple font-sans" style={{ fontSize: '24px', margin: '4px 0 0' }}>Lv. {userStats.level}</h2>
@@ -405,7 +436,13 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {plan.map((item) => (
+              {plan.length === 0 ? (
+                <p className="font-mono" style={{ fontSize: '11px', color: 'var(--text-dim)', textAlign: 'center', padding: '12px' }}>
+                  No roadmap tasks spawned for today.
+                </p>
+              ) : (
+                plan.map((item) => {
+                  return (
                 <div 
                   key={item.id} 
                   onClick={() => handleTogglePlanItem(item.id, item.completed)}
@@ -434,7 +471,9 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
                   </div>
                   <span className="font-mono" style={{ fontSize: '10px', color: 'var(--text-dim)' }}>{item.duration}</span>
                 </div>
-              ))}
+                );
+              })
+              )}
             </div>
           </div>
 
@@ -549,7 +588,13 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
           <div className="glass-panel">
             <h3 className="font-sans" style={{ fontSize: '15px', color: '#fff', marginBottom: '16px' }}>Identity Registry Timeline</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
-              {activity.map((act, idx) => (
+              {activity.length === 0 ? (
+                <p className="font-mono" style={{ fontSize: '11px', color: 'var(--text-dim)', textAlign: 'center', padding: '12px' }}>
+                  No registry events recorded yet.
+                </p>
+              ) : (
+                activity.map((act, idx) => {
+                  return (
                 <div key={idx} style={{ display: 'flex', gap: '12px', borderLeft: '1px solid rgba(255,255,255,0.05)', paddingLeft: '14px', position: 'relative' }}>
                   <div style={{ position: 'absolute', left: '-4.5px', top: '4px', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--neon-purple)', border: '2px solid var(--bg-core)' }} />
                   <div>
@@ -564,7 +609,9 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
                     <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>{act.description}</p>
                   </div>
                 </div>
-              ))}
+                );
+                })
+              )}
             </div>
           </div>
         </div>

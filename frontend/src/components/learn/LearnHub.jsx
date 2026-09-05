@@ -20,9 +20,11 @@ import {
 } from 'lucide-react';
 import FlashCard from './FlashCard';
 import { apiFetch } from '../../api/client';
+import { Button, StatePanel } from '../../components/shared';
 
 export default function LearnHub({ accessToken, onNavigateToLesson, onNavigateToBookmarks }) {
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [roadmap, setRoadmap] = useState(null);
@@ -44,13 +46,17 @@ export default function LearnHub({ accessToken, onNavigateToLesson, onNavigateTo
       const res = await apiFetch('/tracks', { token: accessToken });
       if (res.ok) {
         const json = await res.json();
+        setLoadError(null);
         setTracks(json);
         if (json.length > 0) {
           setSelectedTrack(json[0].id);
         }
+      } else {
+        setLoadError('Failed to map course blueprints.');
       }
     } catch (err) {
       console.error(err);
+      setLoadError('Failed to map course blueprints.');
     } finally {
       setLoading(false);
     }
@@ -150,11 +156,36 @@ export default function LearnHub({ accessToken, onNavigateToLesson, onNavigateTo
 
   if (loading) {
     return (
-      <div className="onboarding-root">
-        <div className="onboarding-panel glass-panel text-center">
-          <RefreshCw className="spin neon-cyan" size={32} style={{ margin: '0 auto 16px' }} />
-          <p className="font-mono text-sm">Mapping course blueprints...</p>
-        </div>
+      <div className="glass-panel">
+        <StatePanel
+          variant="loading"
+          title="Mapping Course Blueprints"
+          message="Binding learning mesh tracks and revision decks..."
+        />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="glass-panel">
+        <StatePanel
+          variant="error"
+          title="Learning Hub Sync Failure"
+          message={loadError}
+          action={
+            <Button
+              className="font-mono"
+              onClick={() => {
+                setLoadError(null);
+                setLoading(true);
+                loadTracks();
+              }}
+            >
+              <RefreshCw size={14} /> RETRY SYNC
+            </Button>
+          }
+        />
       </div>
     );
   }

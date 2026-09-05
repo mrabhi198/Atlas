@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Shield, Mail, Key } from 'lucide-react';
+import { Shield, Mail } from 'lucide-react';
 import { apiFetch } from '../../api/client';
+import { Button, Field, Alert } from '../../components/shared';
 
 export default function ForgotPassword({ onNavigateToLogin }) {
   const [email, setEmail] = useState('');
@@ -44,46 +45,45 @@ export default function ForgotPassword({ onNavigateToLogin }) {
       </div>
 
       {errorMsg && (
-        <div className="admin-alert error font-mono" style={{ fontSize: '11px', marginBottom: '16px' }}>
+        <Alert variant="danger" className="font-mono" style={{ fontSize: '11px', marginBottom: '16px' }}>
           {errorMsg}
-        </div>
+        </Alert>
       )}
 
       {successMsg ? (
         <div className="text-center">
-          <div className="admin-alert success font-mono" style={{ fontSize: '12px', marginBottom: '24px', lineHeight: '1.6' }}>
+          <Alert variant="success" className="font-mono" style={{ fontSize: '12px', marginBottom: '24px', lineHeight: '1.6' }}>
             ✓ {successMsg}
-          </div>
-          <button onClick={onNavigateToLogin} className="neon-btn accent font-sans w-full">
+          </Alert>
+          <Button onClick={onNavigateToLogin} variant="accent" block className="font-sans">
             Proceed to Login
-          </button>
+          </Button>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="credentials-form" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="form-group" style={{ textAlign: 'left' }}>
-            <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>REGISTERED EMAIL ADDRESS</label>
-            <div style={{ position: 'relative' }}>
-              <Mail size={14} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-dim)' }} />
-              <input
-                type="email"
-                required
-                placeholder="dev@domain.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="tech-input font-mono"
-                style={{ paddingLeft: '36px', textTransform: 'none', background: '#020204' }}
-              />
-            </div>
-          </div>
+          <Field
+            label="REGISTERED EMAIL ADDRESS"
+            required
+            className="font-mono"
+            icon={<Mail size={14} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-dim)' }} aria-hidden="true" />}
+            type="email"
+            placeholder="dev@domain.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            autoComplete="email"
+            style={{ paddingLeft: '36px', background: '#020204' }}
+          />
 
-          <button 
-            type="submit" 
-            disabled={isLoading}
-            className="neon-btn accent font-sans w-full"
+          <Button
+            type="submit"
+            variant="accent"
+            block
+            loading={isLoading}
+            className="font-sans"
             style={{ padding: '12px', height: 'auto', textShadow: 'none' }}
           >
             {isLoading ? 'DISPATCHING TOKEN...' : 'DISPATCH PASSWORD RESET LINK'}
-          </button>
+          </Button>
 
           <button 
             type="button" 

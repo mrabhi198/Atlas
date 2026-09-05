@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Key, Lock, CheckCircle, XCircle } from 'lucide-react';
+import { Shield, Lock } from 'lucide-react';
 import { apiFetch } from '../../api/client';
+import { Button, Field, Alert, PasswordStrength } from '../../components/shared';
 
 export default function ResetPassword({ onNavigateToLogin }) {
   const [token, setToken] = useState('');
@@ -90,15 +91,6 @@ export default function ResetPassword({ onNavigateToLogin }) {
     }
   };
 
-  const getStrengthLabel = () => {
-    if (strengthScore === 0) return { text: 'EMPTY', color: 'var(--text-dim)' };
-    if (strengthScore <= 2) return { text: 'WEAK / COMPROMISED', color: 'var(--neon-red)' };
-    if (strengthScore <= 4) return { text: 'MEDIUM COMPLEXITY', color: 'var(--neon-yellow)' };
-    return { text: 'SECURE / STRONG', color: 'var(--neon-lime)' };
-  };
-
-  const labelMeta = getStrengthLabel();
-
   return (
     <div className="onboarding-panel glass-panel fade-in" style={{ maxWidth: '440px' }}>
       <div className="onboarding-header">
@@ -108,94 +100,64 @@ export default function ResetPassword({ onNavigateToLogin }) {
       </div>
 
       {errorMsg && (
-        <div className="admin-alert error font-mono" style={{ fontSize: '11px', marginBottom: '16px', wordBreak: 'break-all' }}>
+        <Alert variant="danger" className="font-mono" style={{ fontSize: '11px', marginBottom: '16px', wordBreak: 'break-all' }}>
           {errorMsg}
-        </div>
+        </Alert>
       )}
 
       {successMsg ? (
         <div className="text-center">
-          <div className="admin-alert success font-mono" style={{ fontSize: '12px', marginBottom: '24px', lineHeight: '1.6' }}>
+          <Alert variant="success" className="font-mono" style={{ fontSize: '12px', marginBottom: '24px', lineHeight: '1.6' }}>
             ✓ {successMsg}
-          </div>
-          <button onClick={onNavigateToLogin} className="neon-btn accent font-sans w-full">
+          </Alert>
+          <Button onClick={onNavigateToLogin} variant="accent" block className="font-sans">
             Proceed to Sign In
-          </button>
+          </Button>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="credentials-form" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div className="form-group" style={{ textAlign: 'left' }}>
-            <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>NEW PASSWORD</label>
-            <div style={{ position: 'relative' }}>
-              <Lock size={14} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-dim)' }} />
-              <input
-                type="password"
-                required
-                disabled={!token}
-                placeholder="Min 10 characters"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="tech-input font-mono"
-                style={{ paddingLeft: '36px', textTransform: 'none', background: '#020204' }}
-              />
-            </div>
-          </div>
+          <Field
+            label="NEW PASSWORD"
+            required
+            className="font-mono"
+            icon={<Lock size={14} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-dim)' }} aria-hidden="true" />}
+            type="password"
+            disabled={!token}
+            placeholder="Min 10 characters"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            autoComplete="new-password"
+            style={{ paddingLeft: '36px', background: '#020204' }}
+          />
 
-          <div className="form-group" style={{ textAlign: 'left' }}>
-            <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>CONFIRM NEW PASSWORD</label>
-            <div style={{ position: 'relative' }}>
-              <Lock size={14} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-dim)' }} />
-              <input
-                type="password"
-                required
-                disabled={!token}
-                placeholder="Repeat new password"
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                className="tech-input font-mono"
-                style={{ paddingLeft: '36px', textTransform: 'none', background: '#020204' }}
-              />
-            </div>
-          </div>
+          <Field
+            label="CONFIRM NEW PASSWORD"
+            required
+            className="font-mono"
+            icon={<Lock size={14} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-dim)' }} aria-hidden="true" />}
+            type="password"
+            disabled={!token}
+            placeholder="Repeat new password"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
+            style={{ paddingLeft: '36px', background: '#020204' }}
+          />
 
           {/* Password Strength Meter */}
-          <div style={{ textAlign: 'left', background: '#080a12', padding: '10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.03)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', marginBottom: '6px' }} className="font-mono">
-              <span>SECURITY RATING:</span>
-              <span style={{ color: labelMeta.color }}>{labelMeta.text}</span>
-            </div>
-            
-            <div style={{ display: 'flex', gap: '4px', height: '4px', marginBottom: '10px' }}>
-              {[1, 2, 3, 4, 5].map(stepIndex => (
-                <div 
-                  key={stepIndex} 
-                  style={{ 
-                    flex: 1, 
-                    borderRadius: '2px',
-                    background: stepIndex <= strengthScore ? labelMeta.color : 'rgba(255,255,255,0.05)',
-                    transition: 'background 0.3s'
-                  }} 
-                />
-              ))}
-            </div>
+          <PasswordStrength score={strengthScore} criteria={passwordCriteria} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', fontSize: '9px', color: 'var(--text-dim)' }} className="font-mono">
-              <span style={{ color: passwordCriteria.length ? 'var(--neon-lime)' : '' }}>• 10+ Characters</span>
-              <span style={{ color: passwordCriteria.upper ? 'var(--neon-lime)' : '' }}>• Uppercase Letter</span>
-              <span style={{ color: passwordCriteria.lower ? 'var(--neon-lime)' : '' }}>• Lowercase Letter</span>
-              <span style={{ color: passwordCriteria.number ? 'var(--neon-lime)' : '' }}>• Numeric Digit</span>
-              <span style={{ color: passwordCriteria.special ? 'var(--neon-lime)' : '' }}>• Special Symbol (@$!%*?&)</span>
-            </div>
-          </div>
-
-          <button 
-            type="submit" 
-            disabled={isLoading || !token}
-            className="neon-btn accent font-sans w-full"
+          <Button
+            type="submit"
+            variant="accent"
+            block
+            disabled={!token}
+            loading={isLoading}
+            className="font-sans"
             style={{ padding: '12px', height: 'auto', textShadow: 'none', marginTop: '6px' }}
           >
             {isLoading ? 'ENCRYPTING PASSWORDS...' : 'COMMIT PASSWORD RESET'}
-          </button>
+          </Button>
 
           <button 
             type="button" 
