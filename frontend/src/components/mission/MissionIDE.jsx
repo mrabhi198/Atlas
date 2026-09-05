@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Play, Folder, FileCode, Terminal, HelpCircle, RefreshCw, Cpu, CheckCircle } from 'lucide-react';
+import { apiFetch } from '../../api/client';
 
 export default function MissionIDE({ user, accessToken, missionCompleted, onCompleteMission }) {
   const [selectedFile, setSelectedFile] = useState('FollowerSearch.kt');
@@ -159,12 +160,9 @@ class SearchBenchmarks {
     ]);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/missions/execute`, {
+      const res = await apiFetch('/missions/execute', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({
           userId: user.id,
           code: editorCode,

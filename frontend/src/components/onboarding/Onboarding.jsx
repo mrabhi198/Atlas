@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Key, Cpu, UserCheck, Terminal, Award, ChevronRight } from 'lucide-react';
+import { apiFetch } from '../../api/client';
 
 export default function Onboarding({ onComplete, onLogin }) {
   const [step, setStep] = useState(1);
@@ -92,9 +93,8 @@ export default function Onboarding({ onComplete, onLogin }) {
         return;
       }
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/auth/login`, {
+        const res = await apiFetch('/auth/login', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             callsign: adminCallsign.trim(),
             passcode

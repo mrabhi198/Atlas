@@ -1,0 +1,644 @@
+Perform a complete file-structure audit and restructuring of the entire project.
+
+IMPORTANT:
+DO NOT start moving, renaming, deleting, or creating files immediately.
+
+This task MUST be performed in the following exact sequence:
+
+PHASE 1 → Analyze the entire existing project structure
+PHASE 2 → Create a detailed file-structure improvement document
+PHASE 3 → Review and validate that proposed structure
+PHASE 4 → Apply the approved structure to the actual project
+PHASE 5 → Update changes_abhi.md with every structural change
+PHASE 6 → Verify the project after restructuring
+
+==================================================
+PHASE 1 — COMPLETE PROJECT STRUCTURE AUDIT
+==================================================
+
+First, inspect the ENTIRE project.
+
+Do not limit the inspection to src/.
+
+Inspect:
+
+- src/
+- app/
+- components/
+- lib/
+- hooks/
+- utils/
+- services/
+- types/
+- config/
+- public/
+- styles/
+- AI-related directories
+- API routes
+- admin-related directories
+- authentication-related directories
+- booking-related directories
+- payment-related directories
+- email-related directories
+- database-related directories
+- mobile-related files
+- shared UI components
+- configuration files
+- scripts
+- tests
+- documentation
+- package.json
+- tsconfig.json
+- next.config.*
+- eslint/prettier configuration
+- other root-level files
+
+Also inspect nested folders recursively.
+
+Create a complete inventory of:
+
+- every important directory
+- every source file
+- file purpose
+- where each file is imported/used
+- duplicate functionality
+- duplicated components
+- misplaced files
+- overly large files
+- unclear naming
+- inconsistent naming
+- files belonging to the wrong domain
+- files that should be shared
+- files that are tightly coupled
+- unused/dead files if confidently identifiable
+- obsolete files if confidently identifiable
+- circular dependency risks
+- unnecessary nesting
+- API organization problems
+- component organization problems
+- business-logic organization problems
+
+IMPORTANT:
+
+Do NOT assume that a file is unused simply because it has few imports.
+
+Trace imports/usages before making that conclusion.
+
+==================================================
+PHASE 2 — CREATE FILE_STRUCTURE_PLAN.MD
+==================================================
+
+After completing the audit, DO NOT modify the actual project structure yet.
+
+Create:
+
+file_structure_plan.md
+
+This document must contain a detailed restructuring proposal.
+
+The document should include:
+
+# Project File Structure Audit & Restructuring Plan
+
+## 1. Current Structure
+
+Show the current relevant project structure.
+
+Explain what each major directory is currently responsible for.
+
+## 2. Problems Found
+
+Categorize problems into:
+
+### A. Misplaced Files
+Files located in directories where they do not logically belong.
+
+### B. Duplicate Functionality
+Multiple files/components doing substantially similar work.
+
+### C. Naming Inconsistencies
+Files/folders with inconsistent naming conventions.
+
+### D. Shared vs Feature-Specific Code
+Identify code that should be shared versus code that should remain feature-specific.
+
+### E. API Structure Problems
+Identify API routes that should be reorganized.
+
+### F. Component Structure Problems
+Identify components that should be reorganized.
+
+### G. Business Logic Problems
+Identify business logic incorrectly placed inside UI components.
+
+### H. Type/Utility Problems
+Identify misplaced types, helpers, utilities, constants, etc.
+
+### I. Admin Structure Problems
+Identify admin-specific code that should be organized more clearly.
+
+### J. AI Structure Problems
+Identify AI-related code that should be organized more clearly.
+
+### K. Booking/Payment Structure Problems
+Identify booking and payment logic that should be grouped appropriately.
+
+### L. Mobile-Specific Code
+Identify mobile-specific files/components/styles and whether they are correctly organized.
+
+## 3. Recommended Architecture
+
+Design the recommended project structure.
+
+Show it as a tree.
+
+For example:
+
+project/
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── features/
+│   ├── lib/
+│   ├── services/
+│   ├── hooks/
+│   ├── types/
+│   └── ...
+├── public/
+└── ...
+
+IMPORTANT:
+
+Do NOT blindly use this example.
+
+Design the structure according to the ACTUAL project.
+
+The recommended architecture must fit the existing Next.js application and its current functionality.
+
+## 4. File-by-File Migration Plan
+
+For EVERY file that needs to move or be renamed, document:
+
+| Current Path | New Path | Action | Reason |
+|--------------|----------|--------|--------|
+
+Actions may include:
+
+- MOVE
+- RENAME
+- MERGE
+- SPLIT
+- DELETE
+- KEEP
+- CREATE
+
+Do not mark a file DELETE unless there is strong evidence it is unnecessary.
+
+## 5. Import Path Changes
+
+Identify which imports will need to change because of the restructuring.
+
+Explain expected impact.
+
+## 6. Component Architecture
+
+Explain:
+
+- shared components
+- feature-specific components
+- page-specific components
+- UI primitives
+- layout components
+
+## 7. Business Logic Architecture
+
+Explain where the following should live:
+
+- API communication
+- booking logic
+- availability logic
+- payment logic
+- authentication
+- email
+- AI logic
+- search logic
+- validation
+- database access
+- external integrations
+
+## 8. API Architecture
+
+Explain the recommended organization for:
+
+- REST/API routes
+- versioned APIs
+- feature-specific APIs
+- shared API utilities
+
+Do NOT change API URLs unless absolutely necessary.
+
+Preserve existing public API contracts whenever possible.
+
+## 9. Naming Convention
+
+Define consistent conventions for:
+
+- folders
+- React components
+- hooks
+- utilities
+- services
+- API files
+- types
+- constants
+
+## 10. What Should NOT Be Changed
+
+Explicitly list things that should remain unchanged.
+
+Especially:
+
+- business behavior
+- API contracts
+- database behavior
+- authentication behavior
+- booking flow
+- payment flow
+- UI appearance
+- routing behavior
+- SEO behavior
+
+unless a structural change genuinely requires an update.
+
+## 11. Risk Assessment
+
+For every major restructuring area, specify:
+
+- risk level
+- affected files
+- possible regression
+- verification required
+
+## 12. Migration Order
+
+Define the safest order in which files should be moved.
+
+For example:
+
+1. Shared types
+2. Utilities
+3. Services
+4. Hooks
+5. Shared components
+6. Feature components
+7. Pages
+8. API organization
+9. Cleanup
+
+Use the order appropriate for the actual project.
+
+## 13. Final Recommended Structure
+
+Provide the complete final directory tree.
+
+This should represent what the project should look like AFTER restructuring.
+
+==================================================
+PHASE 3 — VALIDATE THE PLAN
+==================================================
+
+Before touching the actual file structure, review `file_structure_plan.md`.
+
+Check:
+
+- every proposed move has a reason
+- no important file is accidentally omitted
+- import dependencies are considered
+- shared components are not duplicated
+- business logic is not accidentally moved into UI folders
+- Next.js App Router conventions remain valid
+- API routes remain valid
+- dynamic routes remain valid
+- server/client boundaries remain valid
+- authentication boundaries remain valid
+- no unnecessary restructuring is proposed
+
+If the proposed structure would create unnecessary risk, revise the plan BEFORE implementing it.
+
+IMPORTANT:
+
+Do not optimize for "fewer folders".
+
+Optimize for:
+
+- maintainability
+- discoverability
+- separation of concerns
+- scalability
+- feature ownership
+- clear dependencies
+- minimal duplication
+
+==================================================
+PHASE 4 — APPLY THE FILE STRUCTURE
+==================================================
+
+ONLY after the plan has been completed and validated, modify the actual project.
+
+Apply the structure exactly according to:
+
+file_structure_plan.md
+
+For each file:
+
+- move if required
+- rename if required
+- merge only when explicitly justified
+- split only when explicitly justified
+- update imports
+- update exports
+- update aliases
+- update references
+- update tests
+- update configuration if necessary
+
+IMPORTANT:
+
+Do NOT make unrelated code changes.
+
+Do NOT redesign UI.
+
+Do NOT change business logic.
+
+Do NOT change functionality simply because files are being reorganized.
+
+The purpose of this task is STRUCTURAL REORGANIZATION.
+
+==================================================
+CRITICAL NEXT.JS REQUIREMENTS
+==================================================
+
+Because this is a Next.js project, carefully preserve:
+
+- app routes
+- page.tsx
+- layout.tsx
+- loading.tsx
+- error.tsx
+- not-found.tsx
+- route.ts
+- dynamic routes
+- route groups
+- API routes
+- server components
+- client components
+- "use client"
+- middleware
+- metadata
+- static assets
+
+Do NOT move files in a way that changes URL routes unless explicitly documented and necessary.
+
+If a file is part of the Next.js routing convention, treat it carefully.
+
+==================================================
+SERVER / CLIENT BOUNDARY
+==================================================
+
+Before moving React components, check whether they are:
+
+- Server Components
+- Client Components
+
+Do not accidentally introduce:
+
+Server → Client invalid imports
+or
+Client → Server invalid imports.
+
+Preserve existing:
+
+"use client"
+
+boundaries.
+
+If restructuring exposes a server/client architectural issue, document it separately rather than making unrelated architectural changes.
+
+==================================================
+IMPORT / EXPORT SAFETY
+==================================================
+
+After every logical migration group:
+
+- search for old import paths
+- update imports
+- verify exports
+- verify aliases
+- search for references to old file paths
+
+Do not leave broken imports behind.
+
+==================================================
+DO NOT DELETE SAFELY WORKING CODE
+==================================================
+
+Do NOT delete files simply because:
+
+- they look duplicated
+- they have few imports
+- their name looks old
+- they appear unused
+
+Only delete when usage/dependency analysis confirms they are safe to remove.
+
+If uncertain:
+
+KEEP the file and document it in `file_structure_plan.md` as:
+
+"Requires manual confirmation"
+
+==================================================
+CHANGES_ABHI.MD
+==================================================
+
+After EACH logical restructuring group, update:
+
+changes_abhi.md
+
+Do NOT wait until the very end.
+
+Create a section:
+
+# Project File Structure Restructuring
+
+For every structural change, document:
+
+### [Change Name]
+
+**Old Path:**
+...
+
+**New Path:**
+...
+
+**Action:**
+MOVE / RENAME / MERGE / SPLIT / CREATE / DELETE
+
+**Reason:**
+...
+
+**Dependencies Updated:**
+...
+
+**Imports Updated:**
+...
+
+**Functional Impact:**
+...
+
+**UI Impact:**
+...
+
+**Risk:**
+Low / Medium / High
+
+**Verification:**
+...
+
+The documentation must describe the ACTUAL changes made, not planned changes.
+
+==================================================
+IMPORTANT DOCUMENTATION RULE
+==================================================
+
+`file_structure_plan.md`
+
+= what SHOULD be changed and WHY.
+
+`changes_abhi.md`
+
+= what WAS actually changed.
+
+Do NOT mix these two.
+
+If something was planned but ultimately not changed, clearly mention that in the plan or final status.
+
+==================================================
+PHASE 5 — VERIFICATION
+==================================================
+
+After restructuring, perform a complete verification.
+
+Run the project's available checks, such as:
+
+- TypeScript check
+- ESLint
+- build
+- tests
+- import/dependency validation
+
+Use the project's existing package scripts.
+
+Do not invent unnecessary scripts.
+
+Verify:
+
+### Application
+- app starts
+- pages load
+- routes work
+- dynamic routes work
+- API routes work
+
+### Authentication
+- login
+- logout
+- session handling
+- protected routes
+
+### Booking
+- ferry booking
+- boat booking
+- bike booking
+- activity booking
+- checkout/payment flows
+
+### Search
+- global search
+- unified search
+- activity search
+- boat search
+- ferry search
+
+### Admin
+- admin dashboard
+- booking management
+- relevant admin pages
+
+### AI
+- AI APIs
+- AI-related tools
+- knowledge/search functionality
+
+Only verify functionality relevant to the files that were moved.
+
+==================================================
+FINAL GIT REVIEW
+==================================================
+
+Run:
+
+git status
+
+and:
+
+git diff
+
+Review the complete set of changes.
+
+Make sure:
+
+- no unrelated files were modified
+- no accidental deletions occurred
+- no secrets were added
+- no `.env` files were accidentally committed
+- no generated files were added unnecessarily
+- all structural changes match `file_structure_plan.md`
+- all actual changes are documented in `changes_abhi.md`
+
+==================================================
+FINAL REPORT
+==================================================
+
+At the end, provide a concise summary containing:
+
+1. Current structure problems found
+2. Recommended architecture
+3. Files/folders moved
+4. Files/folders renamed
+5. Files merged
+6. Files deleted, if any
+7. New files/folders created
+8. Import paths updated
+9. Potential risks
+10. Verification results
+11. Any remaining manual-review items
+
+IMPORTANT:
+
+Do NOT create a commit.
+Do NOT push anything.
+
+The final project should be structurally cleaner and easier to maintain while preserving the existing functionality and UI.
+
+MOST IMPORTANT RULE:
+
+Do not restructure based on assumptions.
+
+First understand the ENTIRE project.
+
+Then document the proposed structure.
+
+Then validate the proposal.
+
+Only then modify the actual project according to the documented plan.

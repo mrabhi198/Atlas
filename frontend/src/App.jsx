@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import Onboarding from './components/Onboarding';
-import Dashboard from './components/Dashboard';
-import MissionIDE from './components/MissionIDE';
-import Passport from './components/Passport';
-import LogicPractice from './components/LogicPractice';
-import CareerVault from './components/CareerVault';
-import AdminCenter from './components/AdminCenter';
+import Onboarding from './components/onboarding/Onboarding';
+import Dashboard from './components/dashboard/Dashboard';
+import MissionIDE from './components/mission/MissionIDE';
+import Passport from './components/passport/Passport';
+import LogicPractice from './components/practice/LogicPractice';
+import CareerVault from './components/career/CareerVault';
+import AdminCenter from './components/admin/AdminCenter';
 
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
@@ -15,24 +15,15 @@ import ResetPassword from './components/auth/ResetPassword';
 import AuthSuccess from './components/auth/AuthSuccess';
 import OnboardingWizard from './components/auth/OnboardingWizard';
 import AccountSettings from './components/settings/AccountSettings';
+import Sidebar from './components/layout/Sidebar';
 
 import { 
-  Terminal, 
-  Layout, 
-  Compass, 
-  Award, 
-  Briefcase, 
-  RefreshCw,
-  Settings,
-  ShieldAlert,
-  BookOpen,
-  ArrowLeft
+  ShieldAlert
 } from 'lucide-react';
 
 import LearnHub from './components/learn/LearnHub';
 import LessonViewer from './components/learn/LessonViewer';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
+import { apiFetch } from './api/client';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -64,9 +55,7 @@ function App() {
     const token = accessToken || localStorage.getItem('atlas_access_token');
     if (!token) return;
     try {
-      const res = await fetch(`${API_BASE}/users`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await apiFetch('/users', { token });
       if (res.ok) {
         const data = await res.json();
         setUsersList(data);
@@ -96,9 +85,8 @@ function App() {
       }
 
       try {
-        const res = await fetch(`${API_BASE}/auth/refresh`, {
+        const res = await apiFetch('/auth/refresh', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ refreshToken: savedRefreshToken })
         });
 
@@ -110,8 +98,8 @@ function App() {
           localStorage.setItem('atlas_access_token', data.accessToken);
 
           // Get User data
-          const meRes = await fetch(`${API_BASE}/auth/me`, {
-            headers: { 'Authorization': `Bearer ${data.accessToken}` }
+          const meRes = await apiFetch('/auth/me', {
+            token: data.accessToken
           });
 
           if (meRes.ok) {
@@ -182,9 +170,8 @@ function App() {
       const username = userData.callsign.toLowerCase() + '_' + randomId.substr(0, 3);
       const password = 'PassWord123!_keypad';
 
-      const res = await fetch(`${API_BASE}/auth/register`, {
+      const res = await apiFetch('/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           username,
@@ -198,16 +185,14 @@ function App() {
       if (res.ok) {
         const regData = await res.json();
         // Invalidate email verification automatically
-        await fetch(`${API_BASE}/auth/verify-email`, {
+        await apiFetch('/auth/verify-email', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: regData.verifyToken })
         });
 
         // Log in
-        const logRes = await fetch(`${API_BASE}/auth/login`, {
+        const logRes = await apiFetch('/auth/login', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ loginId: username, password })
         });
 
@@ -228,12 +213,9 @@ function App() {
 
   const handleUpdateUserRole = async (userId, newRole) => {
     try {
-      const res = await fetch(`${API_BASE}/users/${userId}/role`, {
+      const res = await apiFetch(`/users/${userId}/role`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ role: newRole })
       });
 
@@ -241,8 +223,8 @@ function App() {
         fetchUsers();
         // If we updated ourselves, reload profile
         if (userId === user.id) {
-          const selfRes = await fetch(`${API_BASE}/auth/me`, {
-            headers: { 'Authorization': `Bearer ${accessToken}` }
+          const selfRes = await apiFetch('/auth/me', {
+            token: accessToken
           });
           if (selfRes.ok) {
             const selfData = await selfRes.json();
@@ -266,9 +248,8 @@ function App() {
 
   const handleResetSession = async () => {
     try {
-      await fetch(`${API_BASE}/auth/logout`, {
+      await apiFetch('/auth/logout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, refreshToken })
       });
     } catch (err) {
@@ -410,109 +391,14 @@ function App() {
   return (
     <div className="app-container">
       {/* Navigation Sidebar */}
-      <aside className="sidebar">
-        <div className="logo-container">
-          <div className="logo-icon font-sans">A</div>
-          <span className="logo-text">ATLAS</span>
-        </div>
-
-        <nav className="nav-links">
-          <button 
-            className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('overview'); setActiveLessonId(null); }}
-            style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
-          >
-            <Layout size={18} />
-            <span>Overview Dashboard</span>
-          </button>
-
-          <button 
-            className={`nav-item ${activeTab === 'learn' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('learn'); setActiveLessonId(null); }}
-            style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
-          >
-            <BookOpen size={18} />
-            <span>Learning Hub</span>
-          </button>
-
-          <button 
-            className={`nav-item ${activeTab === 'ide' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('ide'); setActiveLessonId(null); }}
-            style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
-          >
-            <Terminal size={18} />
-            <span>Mission Space (IDE)</span>
-          </button>
-
-          <button 
-            className={`nav-item ${activeTab === 'practice' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('practice'); setActiveLessonId(null); }}
-            style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
-          >
-            <Compass size={18} />
-            <span>Logic Sandbox</span>
-          </button>
-
-          <button 
-            className={`nav-item ${activeTab === 'passport' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('passport'); setActiveLessonId(null); }}
-            style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
-          >
-            <Award size={18} />
-            <span>Engineering Passport</span>
-          </button>
-
-          <button 
-            className={`nav-item ${activeTab === 'career' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('career'); setActiveLessonId(null); }}
-            style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
-          >
-            <Briefcase size={18} />
-            <span>Career readiness Vault</span>
-          </button>
-
-          <button 
-            className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('settings'); setActiveLessonId(null); }}
-            style={{ background: 'transparent', border: 'none', width: '100%', textAlign: 'left' }}
-          >
-            <Settings size={18} />
-            <span>Account Settings</span>
-          </button>
-        </nav>
-
-        <div className="sidebar-footer" style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {['admin', 'super admin', 'mentor', 'guider'].includes(user.role?.toLowerCase()) && (
-            <button 
-              onClick={() => {
-                window.location.hash = '#admin';
-              }} 
-              className="ctrl-btn load font-mono w-full"
-              style={{ fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-            >
-              <Settings size={12} /> Admin Center
-            </button>
-          )}
-
-          <button 
-            onClick={handleResetSession} 
-            className="ctrl-btn reset font-mono w-full"
-            style={{ fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-          >
-            <RefreshCw size={12} /> Reset Session
-          </button>
-
-          <div className="user-badge">
-            <div className="avatar">
-              {profile?.avatar || user.username[0]?.toUpperCase() || 'A'}
-            </div>
-            <div className="avatar-info">
-              <span className="avatar-name">{profile?.full_name || user.username}</span>
-              <span className="avatar-role font-mono">{user.role || 'Student'}</span>
-            </div>
-          </div>
-        </div>
-      </aside>
+      <Sidebar
+        activeTab={activeTab}
+        onNavigate={(tab) => { setActiveTab(tab); setActiveLessonId(null); }}
+        user={user}
+        profile={profile}
+        onAdmin={() => { window.location.hash = '#admin'; }}
+        onResetSession={handleResetSession}
+      />
 
       {/* Primary Workspaces Content */}
       <main className="content-wrapper">

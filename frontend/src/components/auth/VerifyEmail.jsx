@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { apiFetch } from '../../api/client';
 
 export default function VerifyEmail({ onNavigateToLogin }) {
   const [status, setStatus] = useState('verifying'); // verifying, success, error
@@ -27,9 +28,8 @@ export default function VerifyEmail({ onNavigateToLogin }) {
 
     const verify = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/auth/verify-email`, {
+        const res = await apiFetch('/auth/verify-email', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token })
         });
 
@@ -58,9 +58,8 @@ export default function VerifyEmail({ onNavigateToLogin }) {
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/auth/resend-verification`, {
+      const res = await apiFetch('/auth/resend-verification', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: resendEmail })
       });
 

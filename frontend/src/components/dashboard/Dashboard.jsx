@@ -23,8 +23,7 @@ import {
   TrendingUp,
   Info
 } from 'lucide-react';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
+import { apiFetch } from '../../api/client';
 
 export default function Dashboard({ user, accessToken, missionCompleted, onNavigateToIDE }) {
   const [loading, setLoading] = useState(true);
@@ -51,9 +50,7 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
   // Fetch Dashboard Summary Data
   const loadDashboardData = async () => {
     try {
-      const res = await fetch(`${API_BASE}/dashboard/summary`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
+      const res = await apiFetch('/dashboard/summary', { token: accessToken });
       if (res.ok) {
         const json = await res.json();
         setData(json);
@@ -84,9 +81,9 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
     if (!accessToken) return;
     const interval = setInterval(async () => {
       try {
-        await fetch(`${API_BASE}/dashboard/heartbeat`, {
+        await apiFetch('/dashboard/heartbeat', {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${accessToken}` }
+          token: accessToken
         });
         // Quietly update goals in memory
         setGoals(prev => prev.map(g => {
@@ -105,12 +102,9 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
   // Toggle Learning Plan item complete status
   const handleTogglePlanItem = async (itemId, currentCompleted) => {
     try {
-      const res = await fetch(`${API_BASE}/dashboard/plan/toggle`, {
+      const res = await apiFetch('/dashboard/plan/toggle', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ itemId, completed: !currentCompleted })
       });
       if (res.ok) {
@@ -126,9 +120,9 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
   // Regenerate Today's Learning Plan
   const handleRegeneratePlan = async () => {
     try {
-      const res = await fetch(`${API_BASE}/dashboard/regenerate-plan`, {
+      const res = await apiFetch('/dashboard/regenerate-plan', {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
+        token: accessToken
       });
       if (res.ok) {
         const json = await res.json();
@@ -142,9 +136,9 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
   // Notification Operations
   const handleMarkNotifRead = async (id) => {
     try {
-      const res = await fetch(`${API_BASE}/dashboard/notifications/${id}/read`, {
+      const res = await apiFetch(`/dashboard/notifications/${id}/read`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
+        token: accessToken
       });
       if (res.ok) {
         setNotifs(prev => prev.map(n => n.id === id ? { ...n, is_read: 1 } : n));
@@ -156,9 +150,9 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
 
   const handleDeleteNotif = async (id) => {
     try {
-      const res = await fetch(`${API_BASE}/dashboard/notifications/${id}`, {
+      const res = await apiFetch(`/dashboard/notifications/${id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
+        token: accessToken
       });
       if (res.ok) {
         setNotifs(prev => prev.filter(n => n.id !== id));
@@ -175,12 +169,9 @@ export default function Dashboard({ user, accessToken, missionCompleted, onNavig
       : [...pinned, actionKey];
     
     try {
-      const res = await fetch(`${API_BASE}/dashboard/preferences`, {
+      const res = await apiFetch('/dashboard/preferences', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ pinnedActions: nextPinned })
       });
       if (res.ok) {

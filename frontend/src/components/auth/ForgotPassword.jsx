@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Shield, Mail, Key } from 'lucide-react';
+import { apiFetch } from '../../api/client';
 
 export default function ForgotPassword({ onNavigateToLogin }) {
   const [email, setEmail] = useState('');
@@ -15,9 +16,8 @@ export default function ForgotPassword({ onNavigateToLogin }) {
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/auth/forgot-password`, {
+      const res = await apiFetch('/auth/forgot-password', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
 

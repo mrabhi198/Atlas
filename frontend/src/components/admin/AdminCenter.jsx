@@ -18,6 +18,7 @@ import {
   Check,
   Briefcase
 } from 'lucide-react';
+import { apiFetch } from '../../api/client';
 
 export default function AdminCenter({ 
   user, 
@@ -51,9 +52,7 @@ export default function AdminCenter({
   const fetchTags = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/tags`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await apiFetch('/tags', { token });
       if (res.ok) {
         setSecurityTags(await res.json());
       }
@@ -66,12 +65,9 @@ export default function AdminCenter({
     if (!newTagName.trim()) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/tags`, {
+      const res = await apiFetch('/tags', {
         method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
+        token,
         body: JSON.stringify({ name: newTagName.trim() })
       });
       if (res.ok) {
@@ -92,9 +88,9 @@ export default function AdminCenter({
     if (!window.confirm(`Are you sure you want to delete the tag "${tagName}"?`)) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/tags/${encodeURIComponent(tagName)}`, {
+      const res = await apiFetch(`/tags/${encodeURIComponent(tagName)}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+        token
       });
       if (res.ok) {
         fetchTags();

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Shield, User, Globe, Cpu, Clock, ChevronRight } from 'lucide-react';
+import { apiFetch } from '../../api/client';
 
 const AVATAR_PRESETS = [
   '👾', '🤖', '🚀', '🔮', '👽', '💀', '🦊', '⚡'
@@ -27,12 +28,9 @@ export default function OnboardingWizard({ user, accessToken, onComplete }) {
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/auth/profile`, {
+      const res = await apiFetch('/auth/profile', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({
           full_name: fullName,
           avatar,

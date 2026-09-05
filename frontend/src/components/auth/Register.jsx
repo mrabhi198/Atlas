@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Key, Mail, Lock, User, CheckCircle2, AlertCircle } from 'lucide-react';
+import { apiFetch } from '../../api/client';
 
 export default function Register({ onNavigateToLogin }) {
   const [email, setEmail] = useState('');
@@ -33,7 +34,7 @@ export default function Register({ onNavigateToLogin }) {
     setUsernameChecking(true);
     const delayDebounce = setTimeout(async () => {
       try {
-        const res = await fetch(`http://localhost:5001/api/auth/check-username/${username.trim()}`);
+        const res = await apiFetch(`/auth/check-username/${username.trim()}`);
         if (res.ok) {
           const data = await res.json();
           setUsernameAvailable(data.available);
@@ -95,9 +96,8 @@ export default function Register({ onNavigateToLogin }) {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/auth/register`, {
+      const res = await apiFetch('/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           username: username.trim(),

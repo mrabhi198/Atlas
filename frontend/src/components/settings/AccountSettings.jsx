@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, User, Lock, Server, Trash2, Cpu, Check } from 'lucide-react';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
+import { apiFetch } from '../../api/client';
 
 export default function AccountSettings({ user, profile, accessToken, onLogout, onUpdateProfile }) {
   const [activeTab, setActiveTab] = useState('profile'); // profile, security, sessions
@@ -26,9 +25,7 @@ export default function AccountSettings({ user, profile, accessToken, onLogout, 
   // Fetch device sessions
   const fetchSessions = async () => {
     try {
-      const res = await fetch(`${API_BASE}/auth/sessions`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
+      const res = await apiFetch('/auth/sessions', { token: accessToken });
       if (res.ok) {
         const data = await res.json();
         setSessions(data);
@@ -56,12 +53,9 @@ export default function AccountSettings({ user, profile, accessToken, onLogout, 
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/auth/profile`, {
+      const res = await apiFetch('/auth/profile', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({
           full_name: fullName,
           country,
@@ -98,12 +92,9 @@ export default function AccountSettings({ user, profile, accessToken, onLogout, 
 
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/auth/change-password`, {
+      const res = await apiFetch('/auth/change-password', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ oldPassword, newPassword })
       });
 
@@ -126,9 +117,9 @@ export default function AccountSettings({ user, profile, accessToken, onLogout, 
 
   const handleRevokeSession = async (sessionId) => {
     try {
-      const res = await fetch(`${API_BASE}/auth/sessions/${sessionId}`, {
+      const res = await apiFetch(`/auth/sessions/${sessionId}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
+        token: accessToken
       });
 
       if (res.ok) {
@@ -151,9 +142,9 @@ export default function AccountSettings({ user, profile, accessToken, onLogout, 
     }
 
     try {
-      const res = await fetch(`${API_BASE}/auth/account`, {
+      const res = await apiFetch('/auth/account', {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
+        token: accessToken
       });
 
       if (res.ok) {

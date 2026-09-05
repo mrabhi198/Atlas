@@ -13,8 +13,7 @@ import {
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/atom-one-dark.css';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
+import { apiFetch } from '../../api/client';
 
 export default function LessonViewer({ lessonId, accessToken, onBack }) {
   const [data, setData] = useState(null);
@@ -31,9 +30,7 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
 
   const loadLesson = async () => {
     try {
-      const res = await fetch(`${API_BASE}/lessons/${lessonId}`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
+      const res = await apiFetch(`/lessons/${lessonId}`, { token: accessToken });
       if (res.ok) {
         const json = await res.json();
         setData(json);
@@ -47,12 +44,9 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
 
   const handleToggleBookmark = async () => {
     try {
-      const res = await fetch(`${API_BASE}/bookmarks`, {
+      const res = await apiFetch('/bookmarks', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ item_type: 'lesson', item_id: lessonId })
       });
       if (res.ok) {
@@ -68,12 +62,9 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
     e.preventDefault();
     if (!newNote.trim()) return;
     try {
-      const res = await fetch(`${API_BASE}/lessons/${lessonId}/notes`, {
+      const res = await apiFetch(`/lessons/${lessonId}/notes`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ text: newNote })
       });
       if (res.ok) {
@@ -87,9 +78,9 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
 
   const handleDeleteNote = async (noteId) => {
     try {
-      const res = await fetch(`${API_BASE}/lessons/notes/${noteId}`, {
+      const res = await apiFetch(`/lessons/notes/${noteId}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
+        token: accessToken
       });
       if (res.ok) {
         loadLesson();
@@ -101,12 +92,9 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
 
   const handleCompleteLesson = async () => {
     try {
-      const res = await fetch(`${API_BASE}/lessons/${lessonId}/progress`, {
+      const res = await apiFetch(`/lessons/${lessonId}/progress`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ status: 'completed', progress_percent: 100, last_position: 100 })
       });
       if (res.ok) {
@@ -119,12 +107,9 @@ export default function LessonViewer({ lessonId, accessToken, onBack }) {
 
   const handleSubmitQuiz = async () => {
     try {
-      const res = await fetch(`${API_BASE}/quiz/submit`, {
+      const res = await apiFetch('/quiz/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({
           lesson_id: lessonId,
           answers: Object.keys(quizAnswers).map(qIdx => ({

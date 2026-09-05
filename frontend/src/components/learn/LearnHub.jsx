@@ -19,8 +19,7 @@ import {
   BookmarkCheck
 } from 'lucide-react';
 import FlashCard from './FlashCard';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}`;
+import { apiFetch } from '../../api/client';
 
 export default function LearnHub({ accessToken, onNavigateToLesson, onNavigateToBookmarks }) {
   const [loading, setLoading] = useState(true);
@@ -42,9 +41,7 @@ export default function LearnHub({ accessToken, onNavigateToLesson, onNavigateTo
   // Fetch Tracks
   const loadTracks = async () => {
     try {
-      const res = await fetch(`${API_BASE}/tracks`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
+      const res = await apiFetch('/tracks', { token: accessToken });
       if (res.ok) {
         const json = await res.json();
         setTracks(json);
@@ -63,9 +60,7 @@ export default function LearnHub({ accessToken, onNavigateToLesson, onNavigateTo
   const loadRoadmap = async (trackId) => {
     if (!trackId) return;
     try {
-      const res = await fetch(`${API_BASE}/tracks/${trackId}`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
+      const res = await apiFetch(`/tracks/${trackId}`, { token: accessToken });
       if (res.ok) {
         const json = await res.json();
         setRoadmap(json);
@@ -85,9 +80,7 @@ export default function LearnHub({ accessToken, onNavigateToLesson, onNavigateTo
   // Fetch Revision Deck
   const loadRevisionQueue = async () => {
     try {
-      const res = await fetch(`${API_BASE}/revision`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
+      const res = await apiFetch('/revision', { token: accessToken });
       if (res.ok) {
         const json = await res.json();
         setRevisionQueue(json.queue || []);
@@ -101,9 +94,7 @@ export default function LearnHub({ accessToken, onNavigateToLesson, onNavigateTo
   // Fetch Bookmarked list
   const loadBookmarksList = async () => {
     try {
-      const res = await fetch(`${API_BASE}/bookmarks`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
+      const res = await apiFetch('/bookmarks', { token: accessToken });
       if (res.ok) {
         const json = await res.json();
         setBookmarks(json);
@@ -139,12 +130,9 @@ export default function LearnHub({ accessToken, onNavigateToLesson, onNavigateTo
     // Spaced repetition action
     const card = flashcards[currentCardIdx];
     try {
-      await fetch(`${API_BASE}/revision/rate`, {
+      await apiFetch('/revision/rate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
+        token: accessToken,
         body: JSON.stringify({ card_id: card.id || currentCardIdx, rating })
       });
     } catch (err) {

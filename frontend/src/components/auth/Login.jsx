@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Shield, Key, Mail, Lock, User, Cpu } from 'lucide-react';
+import { apiFetch, apiUrl } from '../../api/client';
 
 export default function Login({ 
   onLoginSuccess, 
@@ -19,9 +20,8 @@ export default function Login({
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/auth/login`, {
+      const res = await apiFetch('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ loginId, password })
       });
 
@@ -45,8 +45,7 @@ export default function Login({
 
   const handleOAuthLogin = (provider) => {
     setIsLoading(true);
-    const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
-    window.location.href = `${backendUrl}/auth/${provider}`;
+    window.location.href = apiUrl(`/auth/${provider}`);
   };
 
   return (
