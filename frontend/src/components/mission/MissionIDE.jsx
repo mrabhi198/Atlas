@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
-import { Play, Folder, FileCode, Terminal, HelpCircle, RefreshCw, Cpu, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Play, Folder, FileCode, PanelRight, RotateCcw, Trash2, X, Lightbulb, Lock } from 'lucide-react';
 import { apiFetch } from '../../api/client';
+import { Button, Alert, Modal } from '../../components/shared';
+import CodeEditor from './CodeEditor';
+import IDEConsole from './IDEConsole';
+import MissionHeader from './MissionHeader';
+import MissionBrief from './MissionBrief';
 
-export default function MissionIDE({ user, accessToken, missionCompleted, onCompleteMission }) {
-  const [selectedFile, setSelectedFile] = useState('FollowerSearch.kt');
-  const [isCompiling, setIsCompiling] = useState(false);
-  const [terminalLogs, setTerminalLogs] = useState([
-    'System ready.',
-    'Execute compiler using run controls above.'
-  ]);
-  const [codeOptimized, setCodeOptimized] = useState(missionCompleted);
+const EDITABLE_FILE = 'FollowerSearch.kt';
+const HINT = 'Hint: a Trie index turns O(N) prefix filtering into O(L) lookups.';
 
-  // Predefined file contents for the tree explorer
-  const fileContents = {
-    'FollowerSearch.kt': {
-      unoptimized: `package com.atlas.mission.controllers
+const FILES = {
+  'FollowerSearch.kt': {
+    unoptimized: `package com.atlas.mission.controllers
 
 import com.atlas.mission.models.User
 import com.atlas.mission.models.FollowerEdge
@@ -32,7 +30,7 @@ class FollowerSearch {
         }.take(50)
     }
 }`,
-      optimized: `package com.atlas.mission.controllers
+    optimized: `package com.atlas.mission.controllers
 
 import com.atlas.mission.models.User
 import com.atlas.mission.models.FollowerEdge
@@ -82,8 +80,8 @@ class FollowerSearch {
         return node.users.take(50)
     }
 }`
-    },
-    'User.kt': `package com.atlas.mission.models
+  },
+  'User.kt': `package com.atlas.mission.models
 
 data class User(
     val id: String,
@@ -92,7 +90,7 @@ data class User(
     val avatarUrl: String,
     val isVerified: Boolean = false
 )`,
-    'FollowerEdge.kt': `package com.atlas.mission.models
+  'FollowerEdge.kt': `package com.atlas.mission.models
 
 data class FollowerEdge(
     val id: String,
@@ -100,7 +98,7 @@ data class FollowerEdge(
     val followedId: String,
     val timestamp: Long
 )`,
-    'SearchBenchmarks.kt': `package com.atlas.mission
+  'SearchBenchmarks.kt': `package com.atlas.mission
 
 import com.atlas.mission.controllers.FollowerSearch
 import com.atlas.mission.models.User
@@ -120,44 +118,118 @@ class SearchBenchmarks {
         println("LATENCY: \${timeNs / 1_000_000.0} ms")
     }
 }`
-  };
+};
 
-  const [editorCode, setEditorCode] = useState(
-    missionCompleted ? fileContents['FollowerSearch.kt'].optimized : fileContents['FollowerSearch.kt'].unoptimized
+const RUN_PRELUDE = [
+  'Building Kotlin JVM module...',
+  'Executing task: :compileKotlin',
+  'Compilation Successful.',
+  'Executing task: :test --tests "com.atlas.mission.SearchBenchmarks"',
+  'Running performance suite for 50,000 followers...'
+];
+
+function draftKey(userId) {
+  return `atlas_mission_draft_${userId}`;
+}
+
+export default function MissionIDE({ user, accessToken, missionCompleted, onCompleteMission }) {
+  const [selectedFile, setSelectedFile] = useState('FollowerSearch.kt');
+  const [runStatus, setRunStatus] = useState('idle'); // idle | running | success | failed | api_error
+  const [hasRun, setHasRun] = useState(missionCompleted);
+  const [logs, setLogs] = useState([
+    'System ready.',
+    'Press RUN MISSION to execute the benchmark suite.'
+  ]);
+  const [briefOpen, setBriefOpen] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(min-width: 981px)').matches
   );
+  const [consoleOpen, setConsoleOpen] = useState(true);
+  const [resetConfirm, setResetConfirm] = useState(false);
 
-  const handleFileClick = (fileName) => {
-    setSelectedFile(fileName);
-    if (fileName === 'FollowerSearch.kt') {
-      setEditorCode(codeOptimized ? fileContents['FollowerSearch.kt'].optimized : fileContents['FollowerSearch.kt'].unoptimized);
-    } else {
-      setEditorCode(fileContents[fileName]);
+  // Per-file code map. User code in the editable file survives file switching,
+  // and a browser-local draft protects edits made during a session.
+  const [files, setFiles] = useState(() => {
+    const seed = {
+      'FollowerSearch.kt': missionCompleted
+        ? FILES['FollowerSearch.kt'].optimized
+        : FILES['FollowerSearch.kt'].unoptimized,
+      'User.kt': FILES['User.kt'],
+      'FollowerEdge.kt': FILES['FollowerEdge.kt'],
+      'SearchBenchmarks.kt': FILES['SearchBenchmarks.kt']
+    };
+    if (!missionCompleted && user?.id) {
+      try {
+        const saved = localStorage.getItem(draftKey(user.id));
+        if (saved) seed['FollowerSearch.kt'] = saved;
+      } catch {
+        // Storage unavailable — keep the pristine seed.
+      }
+    }
+    return seed;
+  });
+
+  const code = files[selectedFile] || '';
+  const editable = selectedFile === EDITABLE_FILE;
+  const running = runStatus === 'running';
+  const editableCode = files[EDITABLE_FILE];
+  const isDirty = editableCode !== FILES[EDITABLE_FILE].unoptimized;
+
+  // Debounced browser-local draft of the editable file (not server-side).
+  useEffect(() => {
+    if (!user?.id || missionCompleted) return;
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(draftKey(user.id), editableCode);
+      } catch {
+        // Storage unavailable — draft skipped this round.
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [editableCode, user?.id, missionCompleted]);
+
+  const status = missionCompleted
+    ? 'verified'
+    : hasRun || isDirty ? 'in-progress' : 'not-started';
+
+  const clearDraft = () => {
+    if (!user?.id) return;
+    try {
+      localStorage.removeItem(draftKey(user.id));
+    } catch {
+      // Storage unavailable — ignore.
     }
   };
 
-  const handleLoadOptimized = () => {
-    if (selectedFile === 'FollowerSearch.kt') {
-      setCodeOptimized(true);
-      setEditorCode(fileContents['FollowerSearch.kt'].optimized);
+  const handleFileClick = (fileName) => {
+    setSelectedFile(fileName);
+  };
+
+  const handleLoadSolution = () => {
+    // Existing toggle: swap the editable file with the reference implementation.
+    if (editable) {
+      setFiles(prev => ({ ...prev, [EDITABLE_FILE]: FILES[EDITABLE_FILE].optimized }));
     }
   };
 
   const handleResetCode = () => {
-    if (selectedFile === 'FollowerSearch.kt') {
-      setCodeOptimized(false);
-      setEditorCode(fileContents['FollowerSearch.kt'].unoptimized);
+    if (isDirty) {
+      setResetConfirm(true);
+    } else {
+      doReset();
     }
   };
 
+  const doReset = () => {
+    setFiles(prev => ({ ...prev, [EDITABLE_FILE]: FILES[EDITABLE_FILE].unoptimized }));
+    clearDraft();
+    setResetConfirm(false);
+  };
+
   const handleExecuteMission = async () => {
-    setIsCompiling(true);
-    setTerminalLogs([
-      'Building Kotlin JVM module...',
-      'Executing task: :compileKotlin',
-      'Compilation Successful.',
-      'Executing task: :test --tests "com.atlas.mission.SearchBenchmarks"',
-      'Running performance suite for 50,000 followers...'
-    ]);
+    if (running) return;
+    setRunStatus('running');
+    setHasRun(true);
+    setLogs(RUN_PRELUDE);
 
     try {
       const res = await apiFetch('/missions/execute', {
@@ -165,206 +237,229 @@ class SearchBenchmarks {
         token: accessToken,
         body: JSON.stringify({
           userId: user.id,
-          code: editorCode,
+          code: files[EDITABLE_FILE],
           fileName: selectedFile
         })
       });
 
+      const reply = await res.json();
+
       if (res.ok) {
-        const reply = await res.json();
-        setTerminalLogs(reply.logs);
+        setLogs(Array.isArray(reply.logs) ? reply.logs : RUN_PRELUDE);
         if (reply.success) {
-          onCompleteMission(reply.user);
+          setRunStatus('success');
+          clearDraft();
+          if (onCompleteMission) onCompleteMission(reply.user);
+        } else {
+          setRunStatus('failed');
         }
       } else {
-        const err = await res.json();
-        setTerminalLogs(prev => [
+        setLogs(prev => [
           ...prev,
-          `[ERROR] Execution failed: ${err.error || 'Server error'}`
+          `[ERROR] Execution failed: ${reply.error || 'Server error'}`
         ]);
+        setRunStatus('api_error');
       }
     } catch (err) {
       console.error(err);
-      setTerminalLogs(prev => [
+      setLogs(prev => [
         ...prev,
-        '[ERROR] Connection lost. Failed to contact compiler node on port 5001.'
+        '[ERROR] Connection lost. Failed to contact the execution service.'
       ]);
-    } finally {
-      setIsCompiling(false);
+      setRunStatus('api_error');
     }
   };
 
+  const banner = runStatus === 'success' ? (
+    <Alert variant="success">
+      <strong>Mission verified.</strong> All benchmark assertions passed and your Passport has been updated.
+    </Alert>
+  ) : runStatus === 'failed' ? (
+    <Alert variant="warning">
+      <strong>Benchmark failed.</strong> Review the console output, then refine the code and run again. {HINT}
+    </Alert>
+  ) : runStatus === 'api_error' ? (
+    <Alert variant="danger">
+      <strong>Couldn’t reach the execution service.</strong> Check that the backend is running, then press Run to retry.
+    </Alert>
+  ) : null;
+
   return (
     <div className="mission-ide-root">
-      <div className="ide-layout-container">
-        {/* Left Explorer Panel */}
-        <aside className="ide-explorer glass-panel">
+      <MissionHeader
+        title="Followers Search Scale"
+        difficulty="MEDIUM"
+        type="OPTIMIZATION"
+        language="Kotlin / JVM"
+        status={status}
+      />
+
+      {/* IDE Toolbar — primary execution action, then tertiary helpers */}
+      <div className="ide-toolbar" role="toolbar" aria-label="Mission IDE controls">
+        <div className="ide-toolbar__primary">
+          <Button
+            variant="accent"
+            loading={running}
+            icon={<Play size={15} />}
+            onClick={handleExecuteMission}
+            disabled={running}
+            title="Run current code (Ctrl/⌘ + Enter)"
+            aria-keyshortcuts="Control+Enter Meta+Enter"
+            style={{ minWidth: '150px' }}
+          >
+            RUN MISSION
+          </Button>
+          <span className="ide-kbd font-mono" aria-hidden="true">Ctrl/⌘ + Enter</span>
+        </div>
+
+        <div className="ide-toolbar__secondary">
+          <button
+            type="button"
+            className={`ctrl-btn font-mono ${briefOpen ? 'active' : ''}`}
+            onClick={() => setBriefOpen(prev => !prev)}
+            aria-pressed={briefOpen}
+            aria-label="Toggle mission brief"
+            style={{ display: 'flex', gap: '6px', alignItems: 'center' }}
+          >
+            <PanelRight size={13} aria-hidden="true" /> BRIEF
+          </button>
+
+          {editable && (
+            <>
+              <button
+                type="button"
+                className="ctrl-btn load font-mono"
+                onClick={handleLoadSolution}
+                title="Load the reference Trie implementation"
+                style={{ display: 'flex', gap: '6px', alignItems: 'center' }}
+              >
+                <Lightbulb size={13} aria-hidden="true" /> LOAD SOLUTION (TRIE)
+              </button>
+              <button
+                type="button"
+                className="ctrl-btn reset font-mono"
+                onClick={handleResetCode}
+                title="Restore the original unoptimized implementation"
+                style={{ display: 'flex', gap: '6px', alignItems: 'center' }}
+              >
+                <RotateCcw size={13} aria-hidden="true" /> RESET
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="ide-banner" aria-live="polite">
+        {banner}
+      </div>
+
+      {/* Workspace: explorer | editor | brief */}
+      <div className="ide-workspace">
+        <aside className="ide-explorer glass-panel" aria-label="Project explorer">
           <div className="panel-title font-mono">PROJECT EXPLORER</div>
           <div className="tree-folder">
-            <div className="folder-name active font-mono">
-              <Folder size={14} className="neon-purple" />
+            <div className="folder-name font-mono">
+              <Folder size={14} className="neon-purple" aria-hidden="true" />
               <span>mission-scaling-search</span>
             </div>
             <div className="folder-children">
-              <div className="folder-name font-mono">
-                <Folder size={14} />
-                <span>src/main/kotlin</span>
-              </div>
+              <div className="folder-name folder-label font-mono"><Folder size={13} aria-hidden="true" /> src/main/kotlin</div>
               <div className="folder-children file-list">
-                <div 
-                  className={`file-item font-mono ${selectedFile === 'FollowerSearch.kt' ? 'active' : ''}`}
-                  onClick={() => handleFileClick('FollowerSearch.kt')}
-                >
-                  <FileCode size={12} className="neon-cyan" />
-                  <span>FollowerSearch.kt</span>
-                </div>
-                <div 
-                  className={`file-item font-mono ${selectedFile === 'User.kt' ? 'active' : ''}`}
-                  onClick={() => handleFileClick('User.kt')}
-                >
-                  <FileCode size={12} />
-                  <span>User.kt</span>
-                </div>
-                <div 
-                  className={`file-item font-mono ${selectedFile === 'FollowerEdge.kt' ? 'active' : ''}`}
-                  onClick={() => handleFileClick('FollowerEdge.kt')}
-                >
-                  <FileCode size={12} />
-                  <span>FollowerEdge.kt</span>
-                </div>
+                {['FollowerSearch.kt', 'User.kt', 'FollowerEdge.kt'].map(f => (
+                  <button
+                    key={f}
+                    type="button"
+                    className={`file-item font-mono ${selectedFile === f ? 'active' : ''}`}
+                    onClick={() => handleFileClick(f)}
+                    aria-current={selectedFile === f ? 'true' : undefined}
+                    aria-label={`${f}${f === EDITABLE_FILE ? ', editable' : ', read only'}`}
+                  >
+                    <FileCode size={12} className={f === EDITABLE_FILE ? 'neon-cyan' : ''} aria-hidden="true" />
+                    <span>{f}</span>
+                    {f !== EDITABLE_FILE && <Lock size={10} className="file-item__lock" aria-hidden="true" />}
+                  </button>
+                ))}
               </div>
 
-              <div className="folder-name font-mono">
-                <Folder size={14} />
-                <span>src/test/kotlin</span>
-              </div>
+              <div className="folder-name folder-label font-mono"><Folder size={13} aria-hidden="true" /> src/test/kotlin</div>
               <div className="folder-children file-list">
-                <div 
+                <button
+                  type="button"
                   className={`file-item font-mono ${selectedFile === 'SearchBenchmarks.kt' ? 'active' : ''}`}
                   onClick={() => handleFileClick('SearchBenchmarks.kt')}
+                  aria-current={selectedFile === 'SearchBenchmarks.kt' ? 'true' : undefined}
+                  aria-label="SearchBenchmarks.kt, read only"
                 >
-                  <FileCode size={12} />
+                  <FileCode size={12} aria-hidden="true" />
                   <span>SearchBenchmarks.kt</span>
-                </div>
+                  <Lock size={10} className="file-item__lock" aria-hidden="true" />
+                </button>
               </div>
             </div>
           </div>
         </aside>
 
-        {/* Central Code Editor */}
-        <main className="ide-editor-container glass-panel">
+        <main className="ide-editor glass-panel" aria-label="Code editor workspace">
           <div className="editor-tab-header">
             <div className="tab-title font-mono active">
-              <FileCode size={14} className="neon-cyan" />
+              <FileCode size={14} className="neon-cyan" aria-hidden="true" />
               <span>{selectedFile}</span>
             </div>
-            {selectedFile === 'FollowerSearch.kt' && (
-              <div className="editor-controls">
-                <button onClick={handleLoadOptimized} className="ctrl-btn load font-mono">
-                  LOAD TRIE INDEX
-                </button>
-                <button onClick={handleResetCode} className="ctrl-btn reset font-mono">
-                  RESET
-                </button>
-              </div>
-            )}
           </div>
-
-          <div className="editor-workspace">
-            <div className="line-numbers font-mono">
-              {Array.from({ length: editorCode.split('\n').length }).map((_, i) => (
-                <div key={i}>{i + 1}</div>
-              ))}
-            </div>
-            <textarea
-              className="code-textarea font-mono"
-              value={editorCode}
-              onChange={e => setEditorCode(e.target.value)}
-              readOnly={selectedFile !== 'FollowerSearch.kt'}
-              spellCheck="false"
-            />
-          </div>
+          <CodeEditor
+            code={code}
+            onChange={next => setFiles(prev => ({ ...prev, [selectedFile]: next }))}
+            readOnly={!editable}
+            fileName={selectedFile}
+            onRun={handleExecuteMission}
+            runDisabled={running}
+          />
         </main>
 
-        {/* Right Requirements Panel */}
-        <aside className="ide-specs glass-panel">
-          <div className="panel-title font-mono">MISSION SPECS</div>
-          <div className="spec-content">
-            <h2 className="spec-title">Followers Search Scale</h2>
-            <div className="spec-tags">
-              <span className="spec-pill difficulty font-mono">MEDIUM</span>
-              <span className="spec-pill type font-mono">OPTIMIZATION</span>
-            </div>
-            <p className="spec-desc">
-              Your task is to optimize the search query performance for follower prefix lookup.
-              The Instagram engineering team reported that lookup latency increases linearly, failing their core SLAs.
-            </p>
-
-            <div className="spec-section">
-              <h4>Constraints</h4>
-              <ul className="spec-list font-mono">
-                <li>Max dataset (N): 50,000</li>
-                <li>Latency limit: &lt; 5.00 ms</li>
-                <li>Memory budget: &lt; 10.00 MB</li>
-              </ul>
-            </div>
-
-            <div className="spec-section">
-              <h4>Expected Solution</h4>
-              <p className="spec-desc">
-                Instead of filtering the list on every search request (which is $O(N)$), index the users inside a 
-                Trie structure. Searching a prefix of length $L$ inside a Trie is $O(L)$, resulting in stable query latency.
-              </p>
-            </div>
-
-            <div className="spec-section">
-              <h4>Verify Benchmark</h4>
-              <button 
-                onClick={handleExecuteMission} 
-                disabled={isCompiling}
-                className="neon-btn font-sans w-full"
-              >
-                {isCompiling ? (
-                  <>
-                    <RefreshCw size={16} className="animate-spin" /> Compiling JVM...
-                  </>
-                ) : (
-                  <>
-                    <Play size={16} /> Execute Mission
-                  </>
-                )}
-              </button>
-            </div>
+        <aside className={`ide-brief glass-panel ${briefOpen ? 'is-open' : 'is-closed'}`} aria-label="Mission brief">
+          <div className="ide-brief__head">
+            <span className="panel-title font-mono">MISSION BRIEF</span>
+            <button
+              type="button"
+              className="ide-brief__close"
+              onClick={() => setBriefOpen(false)}
+              aria-label="Close mission brief"
+            >
+              <X size={15} aria-hidden="true" />
+            </button>
+          </div>
+          <div className="ide-brief__body">
+            <MissionBrief />
           </div>
         </aside>
       </div>
 
-      {/* Bottom Terminal & Compiler Panel */}
-      <footer className="ide-terminal glass-panel">
-        <div className="terminal-header font-mono">
-          <div className="title">
-            <Terminal size={14} className="neon-cyan" />
-            <span>GRADLE DAEMON CONSOLE (BUILD OUT)</span>
-          </div>
-          <div className="terminal-indicator">
-            <span className={`indicator-bulb ${isCompiling ? 'active' : ''}`}></span>
-            <span>{isCompiling ? 'EXECUTING TEST' : 'IDLE'}</span>
-          </div>
-        </div>
-        <div className="terminal-log-content font-mono">
-          {terminalLogs.map((log, index) => (
-            <div 
-              key={index} 
-              className={`log-line ${
-                log.includes('PASS') || log.includes('SUCCESS') ? 'success' : 
-                log.includes('FAILED') || log.includes('Error') || log.includes('❌') ? 'error' : ''
-              }`}
-            >
-              {log}
-            </div>
-          ))}
-        </div>
-      </footer>
+      <IDEConsole
+        logs={logs}
+        state={runStatus}
+        collapsed={!consoleOpen}
+        onToggleCollapse={() => setConsoleOpen(prev => !prev)}
+      />
+
+      <Modal
+        open={resetConfirm}
+        onClose={() => setResetConfirm(false)}
+        title="Reset code?"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setResetConfirm(false)}>CANCEL</Button>
+            <Button variant="danger" icon={<Trash2 size={14} />} onClick={doReset}>RESET CODE</Button>
+          </>
+        }
+      >
+        <p>
+          Replace the current implementation of {EDITABLE_FILE} with the original unoptimized
+          version? Any edits you have made will be lost.
+        </p>
+        <p className="font-mono" style={{ fontSize: '11px', color: 'var(--text-dim)', marginTop: '8px' }}>
+          Your browser-local draft is cleared as well.
+        </p>
+      </Modal>
     </div>
   );
 }
